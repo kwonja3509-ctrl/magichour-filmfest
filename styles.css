@@ -4295,6 +4295,7 @@ body > main {
 }
 
 @media (max-width: 640px) {
+  .submenu { display: none !important; }
   .brand-logo { width: auto; height: 28px; }
   .brand-wrap { flex: none; }
   .topbar-inner {
