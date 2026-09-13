@@ -4296,21 +4296,24 @@ body > main {
 
 @media (max-width: 640px) {
   .brand-logo { width: auto; height: 28px; }
+  .brand-wrap { flex: none; }
   .topbar-inner {
     flex-wrap: nowrap;
     justify-content: flex-start;
     gap: 6px;
     padding: 8px 10px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
   }
   .top-menu {
     order: 0;
     width: auto;
-    flex: none;
+    flex: 1 1 auto;
+    min-width: 0;
     flex-wrap: nowrap;
     justify-content: flex-start;
     gap: 2px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .menu-item > a {
     min-height: 30px;
@@ -4399,6 +4402,10 @@ body > main {
     border-bottom: none;
     box-shadow: 0 -8px 20px rgba(0,0,0,0.12);
   }
+
+  .direction-grid { grid-template-columns: 1fr; }
+
+  .site-footer { display: none; }
 }
 
 @media (max-width: 400px) {
