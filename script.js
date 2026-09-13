@@ -363,16 +363,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderAuthView('login');
       return;
     }
-    if (isAdminUser(currentUser)) {
-      window.location.href = 'admin.html';
-      return;
-    }
     openMypageModal();
   };
   window.openAccountEntry = openAccountEntry;
 
   document.querySelectorAll('[data-header-login]').forEach((button) => {
-    button.textContent = currentUser ? (isAdminUser(currentUser) ? '관리자' : '마이페이지') : '로그인';
+    button.textContent = currentUser ? '마이페이지' : '로그인';
     button.addEventListener('click', (event) => {
       event.preventDefault();
       openAccountEntry();
@@ -380,6 +376,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (currentUser) {
       const actionsWrap = button.closest('.top-actions') || button.parentElement;
+
+      if (isAdminUser(currentUser) && actionsWrap && !actionsWrap.querySelector('[data-header-admin]')) {
+        const headerAdminBtn = document.createElement('button');
+        headerAdminBtn.type = 'button';
+        headerAdminBtn.className = 'mini-btn';
+        headerAdminBtn.setAttribute('data-header-admin', '');
+        headerAdminBtn.textContent = '관리자';
+        headerAdminBtn.addEventListener('click', () => { window.location.href = 'admin.html'; });
+        actionsWrap.appendChild(headerAdminBtn);
+      }
+
       if (actionsWrap && !actionsWrap.querySelector('[data-header-logout]')) {
         const headerLogoutBtn = document.createElement('button');
         headerLogoutBtn.type = 'button';
@@ -1168,9 +1175,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const homeProgramCarousel = homeProgramGrid.closest('.home-program-carousel');
     if (homeProgramCarousel) {
-      const prevBtn = homeProgramCarousel.querySelector('.home-program-nav.left');
-      const nextBtn = homeProgramCarousel.querySelector('.home-program-nav.right');
       let page = 0;
+      let maxPage = 0;
 
       const updateHomeProgramSlider = () => {
         const cards = Array.from(homeProgramGrid.children);
@@ -1179,22 +1185,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         const gap = parseFloat(getComputedStyle(homeProgramGrid).gap) || 0;
         const viewportWidth = homeProgramCarousel.querySelector('.home-program-viewport').clientWidth;
         const visibleCount = Math.max(1, Math.round((viewportWidth + gap) / (cardRect.width + gap)));
-        const maxPage = Math.max(0, cards.length - visibleCount);
+        maxPage = Math.max(0, cards.length - visibleCount);
         page = Math.min(page, maxPage);
         const offset = page * (cardRect.width + gap);
         homeProgramGrid.style.transform = `translateX(-${offset}px)`;
-        if (prevBtn) prevBtn.disabled = page <= 0;
-        if (nextBtn) nextBtn.disabled = page >= maxPage;
       };
 
-      prevBtn?.addEventListener('click', () => {
-        page -= 1;
+      const advanceHomeProgramSlide = () => {
+        page = page >= maxPage ? 0 : page + 1;
         updateHomeProgramSlider();
+      };
+
+      const AUTOPLAY_INTERVAL_MS = 3500;
+      let autoplayTimer = window.setInterval(advanceHomeProgramSlide, AUTOPLAY_INTERVAL_MS);
+      homeProgramCarousel.addEventListener('mouseenter', () => window.clearInterval(autoplayTimer));
+      homeProgramCarousel.addEventListener('mouseleave', () => {
+        autoplayTimer = window.setInterval(advanceHomeProgramSlide, AUTOPLAY_INTERVAL_MS);
       });
-      nextBtn?.addEventListener('click', () => {
-        page += 1;
-        updateHomeProgramSlider();
-      });
+
       window.addEventListener('resize', updateHomeProgramSlider);
       updateHomeProgramSlider();
     }
