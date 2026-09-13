@@ -1196,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateHomeProgramSlider();
       };
 
-      const AUTOPLAY_INTERVAL_MS = 3500;
+      const AUTOPLAY_INTERVAL_MS = 2000;
       let autoplayTimer = window.setInterval(advanceHomeProgramSlide, AUTOPLAY_INTERVAL_MS);
       homeProgramCarousel.addEventListener('mouseenter', () => window.clearInterval(autoplayTimer));
       homeProgramCarousel.addEventListener('mouseleave', () => {
@@ -1482,7 +1482,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const canDeleteCheer = (msg) => {
       if (!cheerUser) return false;
-      if (isAdminUser(cheerUser)) return true;
+      if (cheerUser.is_super_admin) return true;
       return cheerUser.id === msg.user_id;
     };
 
@@ -2672,6 +2672,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       totalPrice.textContent = '무료';
     }
 
+    const SCREENING_DATETIME_LABEL = '2026년 12월 04일 (금) 16:00';
+
+    const openBookingConfirmModal = (seatList) => {
+      let overlay = document.getElementById('booking-confirm-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'login-modal-overlay';
+        overlay.id = 'booking-confirm-overlay';
+        overlay.innerHTML = `
+          <div class="login-modal" role="dialog" aria-modal="true">
+            <button class="login-modal-close" type="button" aria-label="닫기">×</button>
+            <h2>예매가 완료되었습니다</h2>
+            <p class="booking-confirm-thanks">소중한 시간 내어 매직아워를 찾아주셔서 진심으로 감사드립니다.</p>
+            <div class="booking-confirm-details">
+              <div><strong>상영 일시</strong><span data-confirm-datetime></span></div>
+              <div><strong>선택 좌석</strong><span data-confirm-seats></span></div>
+            </div>
+            <button class="primary-btn" type="button" data-confirm-close style="margin-top: 20px; width: 100%;">확인</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        const closeModal = () => { overlay.hidden = true; };
+        overlay.querySelector('.login-modal-close').addEventListener('click', closeModal);
+        overlay.querySelector('[data-confirm-close]').addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !overlay.hidden) closeModal();
+        });
+      }
+      overlay.querySelector('[data-confirm-datetime]').textContent = SCREENING_DATETIME_LABEL;
+      overlay.querySelector('[data-confirm-seats]').textContent = seatList.join(', ');
+      overlay.hidden = false;
+    };
+
     const takenSeats = await getTakenSeats();
     buildSeatMap(seatSections, {
       getState: (code) => (takenSeats.has(code) ? 'taken' : (selectedSeats.has(code) ? 'selected' : 'available')),
@@ -2707,7 +2741,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      alert(`예매가 완료되었습니다. 선택 좌석: ${seatList.join(', ')}`);
+      openBookingConfirmModal(seatList);
 
       seatList.forEach((code) => takenSeats.add(code));
       selectedSeats.clear();
