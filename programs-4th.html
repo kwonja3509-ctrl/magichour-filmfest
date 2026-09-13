@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>프로그램 | 제 3회 연세예술원 졸업영화제</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="festival-topbar">
+      <div class="topbar-inner container">
+        <div class="brand-wrap">
+          <a class="brand-link" href="index.html" aria-label="메인 페이지로 이동">
+            <img class="brand-logo" src="logo.png" alt="제 3회 연세예술원 졸업영화제 로고" />
+          </a>
+        </div>
+        <nav class="top-menu" aria-label="상단 메인 메뉴">
+          <div class="menu-item">
+            <a href="about-festival.html">영화제 소개</a>
+            <ul class="submenu">
+              <li><a href="about-yeonsei.html">연세예술원 소개</a></li>
+              <li><a href="about-festival.html">영화제 소개</a></li>
+              <li><a href="about-awards.html">수상작</a></li>
+            </ul>
+          </div>
+          <div class="menu-item">
+            <a href="programs-4th.html">프로그램</a>
+            <ul class="submenu">
+              <li><a href="programs-4th.html">4기 단편영화</a></li>
+              <li><a href="programs-gradschool.html">정경대학원 영화</a></li>
+              <li><a href="programs-3rd.html">3기 졸업영화</a></li>
+            </ul>
+          </div>
+          <div class="menu-item">
+            <a href="tickets.html">예매</a>
+          </div>
+          <div class="menu-item">
+            <a href="community-cheer.html">커뮤니티</a>
+            <ul class="submenu">
+              <li><a href="community-cheer.html">응원하기</a></li>
+              <li><a href="community-guide.html">관객 가이드</a></li>
+              <li><a href="community-notice.html">공지사항</a></li>
+              <li><a href="community-faq.html">F&A</a></li>
+            </ul>
+          </div>
+          <div class="menu-item">
+            <a href="sponsor.html">후원</a>
+            <ul class="submenu">
+              <li><a href="sponsor.html">후원 소개</a></li>
+            </ul>
+          </div>
+        </nav>
+        <div class="top-actions">
+          <button class="mini-btn" type="button" data-header-login>로그인</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container program-page-wrap">
+        <div class="program-subnav" aria-label="프로그램 카테고리">
+          <button class="program-tab cat-4th active" type="button" data-program="4th">4기 단편영화</button>
+          <button class="program-tab cat-grad" type="button" data-program="grad">정경대학원 단편영화</button>
+          <button class="program-tab cat-3rd" type="button" data-program="3rd">3기 졸업영화</button>
+        </div>
+
+        <section class="program-section active" data-program="4th">
+          <div class="program-hero-block">
+            <div class="program-carousel" id="program-4th-carousel" aria-label="4기 단편영화 스틸컷">
+              <div class="program-carousel-track" id="program-4th-track"></div>
+              <button class="hero-nav left" type="button" aria-label="이전 영화">‹</button>
+              <button class="hero-nav right" type="button" aria-label="다음 영화">›</button>
+              <div class="hero-utility" aria-label="영화 기능 버튼">
+                <button type="button">♡</button>
+                <button type="button">✦</button>
+                <button type="button">☰</button>
+                <button type="button">↑</button>
+              </div>
+            </div>
+
+            <div class="program-hero-copy">
+              <h2 id="program-4th-title">메트로 입수 마키나</h2>
+              <div class="program-detail-inline" id="program-4th-meta">
+                <span>장르 · 드라마</span>
+                <span>러닝타임 · 28분</span>
+                <span>감독 · 박주환</span>
+              </div>
+            </div>
+
+            <div class="program-story-section">
+              <div class="story-copy">
+                <h3>시놉시스</h3>
+                <p id="program-4th-synopsis">
+                  오래된 다리 위에서 시작된 대화는 사람의 기억을 서서히 불러오고, 잊힌 감정은 다시금 가장 조용한 공간에서 피어납니다.
+                  서로를 알아보지 못한 채 서로의 삶을 헤매며, 결국엔 서로를 가장 깊이 이해하게 되는 이야기입니다.
+                </p>
+              </div>
+            </div>
+
+            <div class="program-profile-section">
+              <h3>감독</h3>
+              <div class="director-intro">
+                <div class="director-photo-wrap">
+                  <img id="program-4th-director-img" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80" alt="감독 박주환 프로필 사진" />
+                </div>
+                <div class="director-copy-wrap">
+                  <div class="director-name" id="program-4th-director-name">박주환 Park Juhwan</div>
+                  <p id="program-4th-director-bio">
+                    대학에서 영화를 전공했다. 단편 《기묘한 하루》와 《지나간 시간》을 통해 감정의 미세한 변화를 정교하게 담아냈다.
+                    그리고 《메트로 입수 마키나》를 통해 영화가 사람의 기억을 어떻게 건드리는지를 탐색하고 있다.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="program-credit-panel">
+              <h3>크레딧</h3>
+              <div class="credit-grid" id="program-4th-credits">
+                <div class="credit-col">
+                  <div class="credit-item"><span>연출/각본</span><strong>박주환</strong></div>
+                  <div class="credit-item"><span>개퍼</span><strong>박민경</strong></div>
+                  <div class="credit-item"><span>촬영</span><strong>황효식, 송지현</strong></div>
+                </div>
+                <div class="credit-col">
+                  <div class="credit-item"><span>조연출</span><strong>차윤아</strong></div>
+                  <div class="credit-item"><span>제작</span><strong>장준혁</strong></div>
+                  <div class="credit-item"><span>스크립터</span><strong>황지원</strong></div>
+                </div>
+                <div class="credit-col">
+                  <div class="credit-item"><span>사운드</span><strong>김소랑</strong></div>
+                  <div class="credit-item"><span>음악</span><strong>임준규</strong></div>
+                  <div class="credit-item"><span>필름제공처</span><strong>센트럴파크</strong></div>
+                </div>
+                <div class="credit-col">
+                  <div class="credit-item"><span>촬영</span><strong>황효식</strong></div>
+                  <div class="credit-item"><span>조명</span><strong>이현준</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="program-film-slider" aria-label="다른 영화 소개">
+              <div class="program-film-header">
+                <h3>다른 영화 소개</h3>
+              </div>
+              <div class="program-film-shell">
+                <div class="program-film-track" id="program-4th-other-track"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="program-section" data-program="grad">
+          <div class="grad-gallery-wrap">
+            <div class="grad-gallery-header">
+              <span>3편의 상영작</span>
+            </div>
+            <div class="grad-gallery-grid">
+              <a class="grad-film-card" href="film-detail.html?film=grad-se-bum-mun">
+                <div class="grad-film-image" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="grad-film-copy">
+                  <h3>세 번째 문</h3>
+                  <p>정민서</p>
+                  <div class="grad-film-meta">2026 · 14m · 드라마</div>
+                </div>
+              </a>
+              <a class="grad-film-card" href="film-detail.html?film=grad-ohhu-ui-nun">
+                <div class="grad-film-image" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="grad-film-copy">
+                  <h3>오후의 눈</h3>
+                  <p>김태윤</p>
+                  <div class="grad-film-meta">2026 · 13m · 실험영화</div>
+                </div>
+              </a>
+              <a class="grad-film-card" href="film-detail.html?film=grad-mujigae-sihum">
+                <div class="grad-film-image" style="background-image:url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="grad-film-copy">
+                  <h3>무지개 실험</h3>
+                  <p>박하람</p>
+                  <div class="grad-film-meta">2026 · 12m · 장편성형</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="program-section" data-program="3rd">
+          <div class="grad-gallery-wrap">
+            <div class="grad-gallery-header">
+              <span>3편의 상영작</span>
+            </div>
+            <div class="grad-gallery-grid">
+              <a class="grad-film-card" href="film-detail.html?film=3rd-bich-ui-jeom">
+                <div class="grad-film-image" style="background-image:url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="grad-film-copy">
+                  <h3>빛의 잔향</h3>
+                  <p>오시온</p>
+                  <div class="grad-film-meta">2025 · 17m · 감성드라마</div>
+                </div>
+              </a>
+              <a class="grad-film-card" href="film-detail.html?film=3rd-i-eups-ui-cho-sang">
+                <div class="grad-film-image" style="background-image:url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="grad-film-copy">
+                  <h3>이웃의 초상</h3>
+                  <p>한서윤</p>
+                  <div class="grad-film-meta">2026 · 18m · 서사</div>
+                </div>
+              </a>
+              <a class="grad-film-card" href="film-detail.html?film=3rd-geu-nal-ui-jeong-won">
+                <div class="grad-film-image" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="grad-film-copy">
+                  <h3>그날의 정원</h3>
+                  <p>박소윤</p>
+                  <div class="grad-film-meta">2026 · 16m · 서정</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+
+    <footer class="site-footer">
+      <div class="container footer-top">
+        <div class="footer-brand-col">
+          <div class="footer-logo"><img src="logo.png" alt="Magic Hour 로고" class="footer-logo-img" />MAGIC HOUR</div>
+          <div class="footer-slogan">제 3회 연세예술원 졸업영화제</div>
+        </div>
+        <div class="footer-col">
+          <a href="about-yeonsei.html">연세예술원 소개</a>
+          <a href="about-festival.html">영화제 소개</a>
+          <a href="about-awards.html">수상작</a>
+        </div>
+        <div class="footer-col">
+          <a href="programs-4th.html">4기 단편영화</a>
+          <a href="programs-gradschool.html">정경대학원 영화</a>
+          <a href="programs-3rd.html">3기 졸업영화</a>
+        </div>
+        <div class="footer-col">
+          <a href="tickets-guide.html">예매 안내</a>
+          <a href="login.html?redirect=reserve.html">예매하기</a>
+          <a href="community-cheer.html">커뮤니티</a>
+        </div>
+        <div class="footer-col">
+          <a href="sponsor.html">후원</a>
+          <a href="mypage.html">마이페이지</a>
+          <a href="community-faq.html">F&amp;A</a>
+        </div>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+        <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4" ry="4"></rect><polygon points="10 9 16 12 10 15" fill="currentColor" stroke="none"></polygon></svg></a>
+        <a href="mailto:suwonfestival@gmail.com" aria-label="이메일 문의"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+      </div>
+
+      <div class="container footer-bottom">© 2026 Magic Hour. All rights reserved.</div>
+    </footer>
+
+    <div class="float-rail">
+      <button class="float-btn" type="button" onclick="window.location.href='reserve.html'">🎟</button>
+      <button class="float-btn" type="button" onclick="window.location.href='login.html'">👤</button>
+      <button class="float-btn" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

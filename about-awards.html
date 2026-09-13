@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>수상작 소개 | 제 3회 연세예술원 졸업영화제</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="festival-topbar">
+      <div class="topbar-inner container">
+        <div class="brand-wrap">
+          <a class="brand-link" href="index.html" aria-label="메인 페이지로 이동">
+            <img class="brand-logo" src="logo.png" alt="제 3회 연세예술원 졸업영화제 로고" />
+          </a>
+        </div>
+
+        <nav class="top-menu" aria-label="상단 메인 메뉴">
+          <div class="menu-item"><a href="about-festival.html">영화제 소개</a>
+            <ul class="submenu">
+              <li><a href="about-yeonsei.html">연세예술원 소개</a></li>
+              <li><a href="about-festival.html">영화제 소개</a></li>
+              <li><a href="about-awards.html">수상작</a></li>
+            </ul>
+          </div>
+          <div class="menu-item"><a href="programs-4th.html">프로그램</a>
+            <ul class="submenu">
+              <li><a href="programs-4th.html">4기 단편영화</a></li>
+              <li><a href="programs-gradschool.html">정경대학원 영화</a></li>
+              <li><a href="programs-3rd.html">3기 졸업영화</a></li>
+            </ul>
+          </div>
+          <div class="menu-item"><a href="tickets.html">예매</a>
+          </div>
+          <div class="menu-item"><a href="community-cheer.html">커뮤니티</a>
+            <ul class="submenu">
+              <li><a href="community-cheer.html">응원하기</a></li>
+              <li><a href="community-guide.html">관객 가이드</a></li>
+              <li><a href="community-notice.html">공지사항</a></li>
+              <li><a href="community-faq.html">F&A</a></li>
+            </ul>
+          </div>
+          <div class="menu-item"><a href="sponsor.html">후원</a>
+            <ul class="submenu">
+              <li><a href="sponsor.html">후원 소개</a></li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="top-actions">
+          <button class="mini-btn" type="button" data-header-login>로그인</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container">
+        <div class="program-subnav" aria-label="영화제 소개 카테고리" style="margin-bottom: 28px;">
+          <button class="program-tab" type="button" onclick="window.location.href='about-festival.html'">영화제 소개</button>
+          <button class="program-tab" type="button" onclick="window.location.href='about-yeonsei.html'">연세예술원 소개</button>
+          <button class="program-tab active" type="button" onclick="window.location.href='about-awards.html'">수상작</button>
+        </div>
+
+        <div class="award-list">
+          <button type="button" class="award-card" data-award="turtle">
+            <div class="award-thumb" style="background-image:url('거북이.jpeg')" role="img" aria-label="단편영화 거북이 포스터"></div>
+            <div class="award-body">
+              <div class="award-badge">제1회 대전국제꿈씨영화제 수상</div>
+              <h3 class="award-film">단편영화 「거북이」</h3>
+              <div class="award-director">최현민 감독</div>
+            </div>
+          </button>
+
+          <button type="button" class="award-card" data-award="limsi">
+            <div class="award-thumb" style="background-image:url('림시교원.webp')" role="img" aria-label="장편영화 림시교원 포스터"></div>
+            <div class="award-body">
+              <div class="award-badge">제20회 키프로스 국제영화제(CYIFF) 3관왕 — 최우수 장편영화상 · 여우주연상 · 남우조연상</div>
+              <h3 class="award-film">장편영화 「림시교원」</h3>
+              <div class="award-director">석범진 감독</div>
+            </div>
+          </button>
+
+          <button type="button" class="award-card" data-award="zero">
+            <div class="award-thumb" style="background-image:url('제로.webp')" role="img" aria-label="단편영화 ZERO 포스터"></div>
+            <div class="award-body">
+              <div class="award-badge">GMAFF(Global Metaverse AI Film Festival) 대상 · AI International Film Festival 4관왕</div>
+              <h3 class="award-film">단편영화 「ZERO」</h3>
+              <div class="award-director">오동하 감독</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <div class="award-modal-overlay" id="award-modal-overlay" hidden>
+      <div class="award-modal-box">
+        <button type="button" class="login-modal-close" id="award-modal-close" aria-label="닫기">&times;</button>
+        <div class="award-modal-poster">
+          <img id="award-modal-img" src="" alt="" />
+        </div>
+        <div class="award-modal-info">
+          <div class="award-badge" id="award-modal-badge"></div>
+          <h3 class="award-film" id="award-modal-title"></h3>
+          <div class="award-director" id="award-modal-director"></div>
+          <p class="award-modal-synopsis" id="award-modal-synopsis"></p>
+          <div class="award-modal-sections" id="award-modal-sections" hidden></div>
+          <dl class="award-modal-credits" id="award-modal-credits" hidden></dl>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container footer-top">
+        <div class="footer-brand-col">
+          <div class="footer-logo"><img src="logo.png" alt="Magic Hour 로고" class="footer-logo-img" />MAGIC HOUR</div>
+          <div class="footer-slogan">제 3회 연세예술원 졸업영화제</div>
+        </div>
+        <div class="footer-col">
+          <a href="about-yeonsei.html">연세예술원 소개</a>
+          <a href="about-festival.html">영화제 소개</a>
+          <a href="about-awards.html">수상작</a>
+        </div>
+        <div class="footer-col">
+          <a href="programs-4th.html">4기 단편영화</a>
+          <a href="programs-gradschool.html">정경대학원 영화</a>
+          <a href="programs-3rd.html">3기 졸업영화</a>
+        </div>
+        <div class="footer-col">
+          <a href="tickets-guide.html">예매 안내</a>
+          <a href="login.html?redirect=reserve.html">예매하기</a>
+          <a href="community-cheer.html">커뮤니티</a>
+        </div>
+        <div class="footer-col">
+          <a href="sponsor.html">후원</a>
+          <a href="mypage.html">마이페이지</a>
+          <a href="community-faq.html">F&amp;A</a>
+        </div>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+        <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4" ry="4"></rect><polygon points="10 9 16 12 10 15" fill="currentColor" stroke="none"></polygon></svg></a>
+        <a href="mailto:suwonfestival@gmail.com" aria-label="이메일 문의"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+      </div>
+
+      <div class="container footer-bottom">© 2026 Magic Hour. All rights reserved.</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

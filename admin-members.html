@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원 관리 | 제 3회 연세예술원 졸업영화제</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="festival-topbar">
+      <div class="topbar-inner container">
+        <div class="brand-wrap">
+          <a class="brand-link" href="index.html" aria-label="메인 페이지로 이동">
+            <img class="brand-logo" src="logo.png" alt="제 3회 연세예술원 졸업영화제 로고" />
+          </a>
+        </div>
+
+        <nav class="top-menu" aria-label="상단 메인 메뉴">
+          <div class="menu-item"><a href="about-festival.html">영화제 소개</a></div>
+          <div class="menu-item"><a href="programs-4th.html">프로그램</a></div>
+          <div class="menu-item"><a href="tickets.html">예매</a></div>
+          <div class="menu-item"><a href="community-cheer.html">커뮤니티</a></div>
+          <div class="menu-item"><a href="sponsor.html">후원</a></div>
+        </nav>
+
+        <div class="top-actions">
+          <button class="mini-btn" type="button" data-header-login>관리자</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container">
+        <div class="section-header" style="justify-content: flex-end;">
+          <button class="secondary-btn" type="button" data-logout>로그아웃</button>
+        </div>
+
+        <div class="program-subnav admin-subnav" aria-label="관리자 메뉴">
+          <button class="program-tab" type="button" onclick="window.location.href='admin.html'">예매현황·VIP</button>
+          <button class="program-tab" type="button" onclick="window.location.href='admin-films.html'">영화 정보</button>
+          <button class="program-tab active" type="button" data-admin-tab="members" onclick="window.location.href='admin-members.html'">회원 관리</button>
+          <button class="program-tab" type="button" onclick="window.location.href='admin-notices.html'">공지사항</button>
+          <button class="program-tab" type="button" onclick="window.location.href='admin-schedule.html'">일정 관리</button>
+          <button class="program-tab" type="button" onclick="window.location.href='admin-sponsors.html'">후원 현황</button>
+          <button class="program-tab" type="button" onclick="window.location.href='admin-settlement.html'">정산</button>
+        </div>
+
+        <div class="admin-panel" data-admin-member-panel>
+          <h2>회원 관리</h2>
+          <p class="admin-hint">가입한 회원 목록입니다. "관리자 승인"을 누르면 해당 회원도 영화 정보·공지사항·일정·후원·정산 관리 권한을 갖게 됩니다.</p>
+          <ul class="admin-list admin-member-list" data-admin-member-list></ul>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-top">
+        <div class="footer-brand-col">
+          <div class="footer-logo"><img src="logo.png" alt="Magic Hour 로고" class="footer-logo-img" />MAGIC HOUR</div>
+          <div class="footer-slogan">제 3회 연세예술원 졸업영화제</div>
+        </div>
+        <div class="footer-col">
+          <a href="about-yeonsei.html">연세예술원 소개</a>
+          <a href="about-festival.html">영화제 소개</a>
+          <a href="about-awards.html">수상작</a>
+        </div>
+        <div class="footer-col">
+          <a href="programs-4th.html">4기 단편영화</a>
+          <a href="programs-gradschool.html">정경대학원 영화</a>
+          <a href="programs-3rd.html">3기 졸업영화</a>
+        </div>
+        <div class="footer-col">
+          <a href="tickets-guide.html">예매 안내</a>
+          <a href="login.html?redirect=reserve.html">예매하기</a>
+          <a href="community-cheer.html">커뮤니티</a>
+        </div>
+        <div class="footer-col">
+          <a href="sponsor.html">후원</a>
+          <a href="mypage.html">마이페이지</a>
+          <a href="community-faq.html">F&amp;A</a>
+        </div>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+        <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4" ry="4"></rect><polygon points="10 9 16 12 10 15" fill="currentColor" stroke="none"></polygon></svg></a>
+        <a href="mailto:suwonfestival@gmail.com" aria-label="이메일 문의"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+      </div>
+
+      <div class="container footer-bottom">© 2026 Magic Hour. All rights reserved.</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

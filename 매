@@ -1,0 +1,83 @@
+Attached Element Context from Integrated Browser
+
+Element: a.program-more-card.warm
+
+URL: http://localhost:8000/programs.html
+
+HTML Path: main.page-shell > div.container.program-page-wrap > section.program-section.active > div.program-hero-block > div.program-more-slider > div.program-more-track > a.program-more-card.warm
+
+Outer HTML:
+```html
+<a class="program-more-card warm" href="programs-gradschool.html">
+                  <div class="more-film-thumb" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&amp;fit=crop&amp;w=900&amp;q=80');"></div>
+                  <div class="more-film-copy">
+                    <h4>세 번째 문</h4>
+                    <p>정경대학원 단편영화</p>
+                  </div>
+                </a>
+```
+
+Dimensions:
+- top: 958px
+- left: 375px
+- width: 277px
+- height: 297px
+
+CSS:
+```css
+* { box-sizing: border-box; }
+a { color: inherit; text-decoration: none; }
+.program-more-card { flex: 0 0 calc((100% - 54px) / 4);
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: none; }
+.warm { background: transparent; }
+.warm { background: #f0e1d7; }
+
+/* Inherited */
+body { color: var(--ink); font-family: 'Escoredream', 'Noto Sans KR', sans-serif; font-size: 10pt }
+
+/* Resolved values */
+border-radius: 0px;
+border: 0px none rgb(29, 36, 53);
+text-decoration: rgb(29, 36, 53);
+background-attachment: scroll;
+background-clip: border-box;
+background-color: rgb(240, 225, 215);
+background-image: none;
+background-origin: padding-box;
+background-position-x: 0%;
+background-position-y: 0%;
+background-repeat: repeat;
+background-size: auto;
+box-shadow: none;
+box-sizing: border-box;
+color: rgb(29, 36, 53);
+cursor: pointer /*UA*/;
+display: flex;
+flex-basis: calc(25% - 13.5px);
+flex-direction: column;
+flex-grow: 0;
+flex-shrink: 0;
+font-family: Escoredream, "Noto Sans KR", sans-serif;
+font-size: 13.3333px;
+height: 297px;
+min-height: 260px;
+outline-color: rgb(229, 151, 0) /*UA*/;
+outline-offset: 1px /*UA*/;
+outline-style: auto /*UA*/;
+outline-width: 1px /*UA*/;
+overflow-x: hidden;
+overflow-y: hidden;
+width: 277px;
+
+/* CSS variables */
+--ink: #1d2435;
+```

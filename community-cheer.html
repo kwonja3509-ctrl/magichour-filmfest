@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>응원하기 | 제 3회 연세예술원 졸업영화제</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="festival-topbar">
+      <div class="topbar-inner container">
+        <div class="brand-wrap">
+          <a class="brand-link" href="index.html" aria-label="메인 페이지로 이동">
+            <img class="brand-logo" src="logo.png" alt="제 3회 연세예술원 졸업영화제 로고" />
+          </a>
+        </div>
+
+        <nav class="top-menu" aria-label="상단 메인 메뉴">
+          <div class="menu-item"><a href="about-festival.html">영화제 소개</a>
+            <ul class="submenu">
+              <li><a href="about-yeonsei.html">연세예술원 소개</a></li>
+              <li><a href="about-festival.html">영화제 소개</a></li>
+              <li><a href="about-awards.html">수상작</a></li>
+            </ul>
+          </div>
+          <div class="menu-item"><a href="programs-4th.html">프로그램</a>
+            <ul class="submenu">
+              <li><a href="programs-4th.html">4기 단편영화</a></li>
+              <li><a href="programs-gradschool.html">정경대학원 영화</a></li>
+              <li><a href="programs-3rd.html">3기 졸업영화</a></li>
+            </ul>
+          </div>
+          <div class="menu-item"><a href="tickets.html">예매</a>
+          </div>
+          <div class="menu-item"><a href="community-cheer.html">커뮤니티</a>
+            <ul class="submenu">
+              <li><a href="community-cheer.html">응원하기</a></li>
+              <li><a href="community-guide.html">관객 가이드</a></li>
+              <li><a href="community-notice.html">공지사항</a></li>
+              <li><a href="community-faq.html">F&A</a></li>
+            </ul>
+          </div>
+          <div class="menu-item"><a href="sponsor.html">후원</a>
+            <ul class="submenu">
+              <li><a href="sponsor.html">후원 소개</a></li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="top-actions">
+          <button class="mini-btn" type="button" data-header-login>로그인</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container">
+        <div class="program-subnav" aria-label="커뮤니티 카테고리" style="margin-bottom: 28px;">
+          <button class="program-tab active" type="button" onclick="window.location.href='community-cheer.html'">응원하기</button>
+          <button class="program-tab" type="button" onclick="window.location.href='community-guide.html'">관객 가이드</button>
+          <button class="program-tab" type="button" onclick="window.location.href='community-notice.html'">공지사항</button>
+          <button class="program-tab" type="button" onclick="window.location.href='community-faq.html'">F&amp;A</button>
+        </div>
+
+        <div class="cheer-hero">
+          <h1>응원 메시지</h1>
+          <p class="cheer-sub">상영회를 준비한 학생들에게 따뜻한 응원의 한마디를 남겨주세요</p>
+
+          <div class="cheer-card">
+            <label for="cheer-name">이름</label>
+            <input type="text" id="cheer-name" placeholder="로그인 후 이용 가능합니다" readonly />
+
+            <label for="cheer-message" style="margin-top: 26px;">응원 메시지</label>
+            <textarea id="cheer-message" rows="5" placeholder="매직아워팀, 응원합니다! 화이팅!"></textarea>
+
+            <button type="button" class="cheer-submit" id="cheer-submit-btn">응원 메시지 남기기</button>
+          </div>
+
+          <div class="cheer-message-list" id="cheer-message-list">
+            <p class="cheer-empty" id="cheer-empty-text">아직 등록된 응원 메시지가 없습니다. 첫 번째 응원을 남겨보세요!</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-top">
+        <div class="footer-brand-col">
+          <div class="footer-logo"><img src="logo.png" alt="Magic Hour 로고" class="footer-logo-img" />MAGIC HOUR</div>
+          <div class="footer-slogan">제 3회 연세예술원 졸업영화제</div>
+        </div>
+        <div class="footer-col">
+          <a href="about-yeonsei.html">연세예술원 소개</a>
+          <a href="about-festival.html">영화제 소개</a>
+          <a href="about-awards.html">수상작</a>
+        </div>
+        <div class="footer-col">
+          <a href="programs-4th.html">4기 단편영화</a>
+          <a href="programs-gradschool.html">정경대학원 영화</a>
+          <a href="programs-3rd.html">3기 졸업영화</a>
+        </div>
+        <div class="footer-col">
+          <a href="tickets-guide.html">예매 안내</a>
+          <a href="login.html?redirect=reserve.html">예매하기</a>
+          <a href="community-cheer.html">커뮤니티</a>
+        </div>
+        <div class="footer-col">
+          <a href="sponsor.html">후원</a>
+          <a href="mypage.html">마이페이지</a>
+          <a href="community-faq.html">F&amp;A</a>
+        </div>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+        <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4" ry="4"></rect><polygon points="10 9 16 12 10 15" fill="currentColor" stroke="none"></polygon></svg></a>
+        <a href="mailto:suwonfestival@gmail.com" aria-label="이메일 문의"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+      </div>
+
+      <div class="container footer-bottom">© 2026 Magic Hour. All rights reserved.</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
