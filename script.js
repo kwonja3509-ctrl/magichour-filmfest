@@ -676,99 +676,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const defaultFilmCatalog = [
     {
-      id: 'metro-ipsu-makina',
+      id: 'placeholder',
       category: '4th',
-      title: '메트로 입수 마키나',
-      director: '박주환',
-      runtime: '28분',
-      genre: '드라마',
-      year: '2026',
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80',
-      stills: [
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80',
-        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1800&q=80'
-      ],
-      synopsis: '오래된 다리 위에서 시작된 대화는 사람의 기억을 서서히 불러오고, 잊힌 감정은 다시금 가장 조용한 공간에서 피어납니다. 서로를 알아보지 못한 채 서로의 삶을 헤매며, 결국엔 서로를 가장 깊이 이해하게 되는 이야기입니다.',
-      directorBio: '대학에서 영화를 전공했다. 단편 《기묘한 하루》와 《지나간 시간》을 통해 감정의 미세한 변화를 정교하게 담아냈다. 그리고 《메트로 입수 마키나》를 통해 영화가 사람의 기억을 어떻게 건드리는지를 탐색하고 있다.',
-      credits: ['연출/각본: 박주환', '개퍼: 박민경', '촬영: 황효식, 송지현', '조연출: 차윤아', '제작: 장준혁', '스크립터: 황지원', '사운드: 김소랑', '음악: 임준규', '필름제공처: 센트럴파크', '조명: 이현준']
-    },
-    {
-      id: 'grad-se-bum-mun',
-      category: 'grad',
-      title: '세 번째 문',
-      director: '정민서',
-      runtime: '14m',
-      genre: '드라마',
-      year: '2026',
-      image: 'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=1800&q=80',
-      synopsis: '서로 다른 시간대의 기억들이 하나의 문 앞에서 겹치며 사람과 사람 사이의 미묘한 거리감을 드러내는 작품입니다.',
-      directorBio: '정민서 | 연세예술원 영상전공. 대사보다 침묵의 밀도를 탐색하는 연출을 선보이고 있습니다.',
-      credits: ['감독: 정민서', '촬영: 이도현', '편집: 최시은', '음악: 강우진']
-    },
-    {
-      id: 'grad-ohhu-ui-nun',
-      category: 'grad',
-      title: '오후의 눈',
-      director: '김태윤',
-      runtime: '13m',
-      genre: '실험영화',
-      year: '2026',
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80',
-      synopsis: '하루의 끝과 시작 사이에 남은 어두운 창틈을 통해 도시의 감정과 사람들의 공백을 묘사한 장면 중심의 실험영화입니다.',
-      directorBio: '김태윤 | 영화연출 전공. 빛의 흐름과 시선의 여백을 활용해 공간의 감정을 재구성합니다.',
-      credits: ['감독: 김태윤', '촬영: 고서연', '편집: 한지환', '음악: 윤혜준']
-    },
-    {
-      id: 'grad-mujigae-sihum',
-      category: 'grad',
-      title: '무지개 실험',
-      director: '박하람',
-      runtime: '12m',
-      genre: '장편성형',
-      year: '2026',
-      image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1800&q=80',
-      synopsis: '아름다운 색이 사라지는 순간, 각자 다른 방식으로 세상을 바라보던 네 인물이 서로의 감정을 교차시키며 삶의 일부를 되찾습니다.',
-      directorBio: '박하람 | 영상 제작을 통해 색채와 심리적 공간을 연결하는 실험적인 연출가입니다.',
-      credits: ['감독: 박하람', '촬영: 정우진', '편집: 신다은', '음악: 이수빈']
-    },
-    {
-      id: '3rd-i-eups-ui-cho-sang',
-      category: '3rd',
-      title: '이웃의 초상',
-      director: '한서윤',
-      runtime: '18m',
-      genre: '서사',
-      year: '2026',
-      image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1800&q=80',
-      synopsis: '오래된 골목에 살던 사람들의 표정과 시간의 흔적을 따라가며, 기억 속으로 들어간 이웃들의 삶을 조용히 기록합니다.',
-      directorBio: '한서윤 | 3기 졸업영화 감독. 사람들의 표정과 환경의 리듬을 섬세하게 살려 동시대의 감성을 담아냅니다.',
-      credits: ['감독: 한서윤', '각본: 오시온', '촬영: 강현우', '편집: 유서린']
-    },
-    {
-      id: '3rd-bich-ui-jeom',
-      category: '3rd',
-      title: '빛의 잔향',
-      director: '오시온',
-      runtime: '17m',
-      genre: '감성드라마',
-      year: '2025',
-      image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1800&q=80',
-      synopsis: '어느 날 갑자기 사라진 빛의 흔적을 따라가며 사람과 공간이 남긴 기억을 조용히 복원하는 이야기입니다.',
-      directorBio: '오시온 | 감정의 미세한 변화를 화면에 정직하게 남기며, 장면의 리듬을 섬세하게 운용합니다.',
-      credits: ['감독: 오시온', '촬영: 강은재', '편집: 윤민채', '음악: 서승우']
-    },
-    {
-      id: '3rd-geu-nal-ui-jeong-won',
-      category: '3rd',
-      title: '그날의 정원',
-      director: '박소윤',
-      runtime: '16m',
-      genre: '서정',
-      year: '2026',
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80',
-      synopsis: '시들어가는 정원과 잠깐 만난 인연을 통해 누군가의 삶이 어떤 방식으로 다시 피어나는지를 보여주는 작품입니다.',
-      directorBio: '박소윤 | 공간의 정적과 인물의 표정을 같이 살피며 감정의 흐름을 정교하게 그립니다.',
-      credits: ['감독: 박소윤', '촬영: 한수아', '편집: 김규리', '음악: 박예진']
+      title: '영화 정보를 불러오지 못했습니다',
+      director: '-',
+      runtime: '-',
+      genre: '-',
+      year: '-',
+      image: '',
+      stills: [''],
+      synopsis: '잠시 후 다시 시도해 주세요.',
+      directorBio: '',
+      credits: []
     }
   ];
 
