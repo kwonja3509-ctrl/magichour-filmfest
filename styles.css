@@ -4407,6 +4407,46 @@ body > main {
   .direction-grid { grid-template-columns: 1fr; }
 
   .site-footer { display: none; }
+
+  /* admin pages */
+  .admin-subnav {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-subnav .program-tab {
+    flex: none;
+    white-space: nowrap;
+    padding: 10px 14px;
+    font-size: 0.72rem;
+  }
+  .admin-panel { padding: 14px; border-radius: 14px; }
+  .admin-panel h2 { font-size: 1.05rem; }
+  .admin-hint { font-size: 0.76rem; }
+  .admin-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+    font-size: 0.82rem;
+  }
+  .admin-member-actions { width: 100%; flex-wrap: wrap; gap: 6px; }
+  .admin-member-actions button { flex: 1 1 auto; font-size: 0.72rem; padding: 8px 10px; }
+  .admin-list li.admin-booking-row { font-size: 0.78rem; }
+  .admin-calendar-head h3 { font-size: 0.85rem; }
+  .admin-calendar-head .secondary-btn {
+    padding: 6px 9px;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+  .admin-film-tabs-row .admin-film-tab,
+  .admin-film-tabs-row .primary-btn { font-size: 0.74rem; padding: 8px 12px; }
+  .admin-field label { font-size: 0.76rem; }
+  .admin-field input,
+  .admin-field select,
+  .admin-field textarea { font-size: 0.82rem; }
+  .admin-schedule-filter-btn { font-size: 0.72rem; padding: 6px 10px; }
 }
 
 @media (max-width: 400px) {
