@@ -2567,6 +2567,10 @@ body > main {
   margin-top: 24px;
 }
 
+.seat-layout > * {
+  min-width: 0;
+}
+
 .screen {
   display: flex;
   align-items: center;
