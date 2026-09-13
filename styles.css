@@ -194,7 +194,6 @@ body > main {
 .hero {
   position: relative;
   min-height: 100vh;
-  height: 100vh;
 }
 
 .hero-main {
@@ -217,8 +216,8 @@ body > main {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  height: 100vh;
   padding-top: 80px;
+  padding-bottom: 40px;
 }
 
 .hero-copy {
@@ -4231,9 +4230,26 @@ body > main {
 
 @media (max-width: 640px) {
   .brand-logo { width: auto; height: 38px; }
-  .hero-logo { height: 180px; }
+  .hero-copy { gap: 0; padding: 0 20px; }
+  .hero-copy .festival-name { margin-bottom: 14px; }
+  .hero-logo { height: 150px; margin-top: 0; }
+  .festival-meta { margin-top: 16px; font-size: 9pt; }
+  .hero-cta { margin-top: 18px; }
   .hero-copy .festival-date { font-size: 1rem; }
   .section-header { padding: 16px 14px; }
   .seat-wrap { justify-content: flex-start; }
   .seat { width: 32px; height: 32px; font-size: 0.68rem; }
+}
+
+@media (max-width: 400px) {
+  .hero-logo { height: 120px; }
+  .float-rail { right: 14px; bottom: 16px; gap: 8px; }
+  .float-btn { width: 40px; height: 40px; font-size: 1rem; }
+}
+
+@media (max-width: 640px) and (max-height: 720px) {
+  .hero-inner { padding-top: 16px; padding-bottom: 20px; }
+  .hero-logo { height: 100px; }
+  .festival-meta { margin-top: 10px; gap: 3px; }
+  .hero-cta { margin-top: 12px; }
 }
