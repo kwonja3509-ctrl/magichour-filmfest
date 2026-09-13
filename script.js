@@ -1774,6 +1774,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (filmTabsEl && filmListEl) {
       let activeCat = '4th';
 
+      const resizeImageFile = (file, maxDim = 1600, quality = 0.82) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(reader.error);
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = () => {
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              const scale = maxDim / Math.max(width, height);
+              width = Math.round(width * scale);
+              height = Math.round(height * scale);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.src = String(reader.result);
+        };
+        reader.readAsDataURL(file);
+      });
+
       const renderStillRow = (src) => `
         <div class="admin-still-row">
           <div class="admin-still-thumb" style="background-image:url('${src}')"></div>
@@ -1893,15 +1917,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           input.value = '';
         });
 
-        card.querySelector('[data-new-still-file]').addEventListener('change', (e) => {
+        card.querySelector('[data-new-still-file]').addEventListener('change', async (e) => {
           const file = e.target.files[0];
           if (!file) return;
-          const reader = new FileReader();
-          reader.onload = () => {
-            addStill(String(reader.result));
-            e.target.value = '';
-          };
-          reader.readAsDataURL(file);
+          const dataUrl = await resizeImageFile(file);
+          addStill(dataUrl);
+          e.target.value = '';
         });
 
         const directorPhotoThumb = card.querySelector('[data-director-photo-thumb]');
@@ -1909,16 +1930,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         directorPhotoUrlInput.addEventListener('input', () => {
           directorPhotoThumb.style.backgroundImage = `url('${directorPhotoUrlInput.value}')`;
         });
-        card.querySelector('[data-director-photo-file]').addEventListener('change', (e) => {
+        card.querySelector('[data-director-photo-file]').addEventListener('change', async (e) => {
           const file = e.target.files[0];
           if (!file) return;
-          const reader = new FileReader();
-          reader.onload = () => {
-            directorPhotoUrlInput.value = String(reader.result);
-            directorPhotoThumb.style.backgroundImage = `url('${directorPhotoUrlInput.value}')`;
-            e.target.value = '';
-          };
-          reader.readAsDataURL(file);
+          const dataUrl = await resizeImageFile(file);
+          directorPhotoUrlInput.value = dataUrl;
+          directorPhotoThumb.style.backgroundImage = `url('${dataUrl}')`;
+          e.target.value = '';
         });
       };
 
