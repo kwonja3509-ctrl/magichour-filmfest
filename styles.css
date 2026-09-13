@@ -4390,7 +4390,7 @@ body > main {
 
   .ticket-card { padding-bottom: 170px; }
   .reserve-float-rail { bottom: 178px; }
-  .booking-summary {
+  .ticket-card .booking-summary {
     position: fixed;
     left: 0;
     right: 0;
@@ -4447,6 +4447,16 @@ body > main {
   .admin-field select,
   .admin-field textarea { font-size: 0.82rem; }
   .admin-schedule-filter-btn { font-size: 0.72rem; padding: 6px 10px; }
+
+  .program-film-slider { padding: 18px 0 14px; }
+  .program-film-header { margin-bottom: 12px; }
+  .program-film-header h3 { font-size: 1.05rem; }
+  .program-film-track { gap: 10px; }
+  .program-film-card { flex-basis: 150px; }
+  .program-film-image { height: 160px; }
+  .program-film-info { padding: 8px 0 0; gap: 3px; }
+  .program-film-info strong { font-size: 0.85rem; }
+  .program-film-info span { font-size: 0.68rem; }
 }
 
 @media (max-width: 400px) {
