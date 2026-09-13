@@ -565,9 +565,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const buildSeatMap = (container, { getState, onClick }) => {
     const sections = [
-      { key: 'left', count: 8, base: 0, mid: false },
-      { key: 'center', count: 8, base: 8, mid: true },
-      { key: 'right', count: 8, base: 16, mid: false }
+      { count: 8, base: 0 },
+      { count: 8, base: 8 },
+      { count: 8, base: 16 }
     ];
 
     const applyState = (seat, state) => {
@@ -586,12 +586,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     };
 
-    sections.forEach(({ count, base, mid }) => {
-      const sectionEl = document.createElement('div');
-      sectionEl.className = 'seat-section';
-      SEAT_ROW_LABELS.forEach((rowLabel) => {
-        const row = document.createElement('div');
-        row.className = mid ? 'seat-row mid' : 'seat-row';
+    container.innerHTML = '';
+    SEAT_ROW_LABELS.forEach((rowLabel) => {
+      const row = document.createElement('div');
+      row.className = 'seat-row';
+
+      const label = document.createElement('span');
+      label.className = 'seat-row-label';
+      label.textContent = rowLabel;
+      row.appendChild(label);
+
+      sections.forEach(({ count, base }, sectionIndex) => {
+        if (sectionIndex > 0) {
+          const aisle = document.createElement('span');
+          aisle.className = 'seat-aisle';
+          row.appendChild(aisle);
+        }
         for (let i = 1; i <= count; i += 1) {
           const seatCode = `${rowLabel}${base + i}`;
           const seat = document.createElement('button');
@@ -604,10 +614,27 @@ document.addEventListener('DOMContentLoaded', async () => {
           });
           row.appendChild(seat);
         }
-        sectionEl.appendChild(row);
       });
-      container.appendChild(sectionEl);
+      container.appendChild(row);
     });
+
+    const minimapRoot = container.parentElement?.querySelector('[data-seat-minimap]');
+    if (minimapRoot) {
+      const rowsWrap = minimapRoot.querySelector('[data-minimap-rows]');
+      const viewportBox = minimapRoot.querySelector('[data-minimap-viewport]');
+      rowsWrap.innerHTML = SEAT_ROW_LABELS.map(() => '<div class="seat-minimap-row"></div>').join('');
+
+      const updateViewportBox = () => {
+        const scrollableWidth = container.scrollWidth - container.clientWidth;
+        const scrollRatio = scrollableWidth > 0 ? container.scrollLeft / scrollableWidth : 0;
+        const viewportWidthRatio = Math.min(1, container.clientWidth / container.scrollWidth);
+        viewportBox.style.width = `${viewportWidthRatio * 100}%`;
+        viewportBox.style.left = `${scrollRatio * (1 - viewportWidthRatio) * 100}%`;
+      };
+      updateViewportBox();
+      container.addEventListener('scroll', updateViewportBox);
+      window.addEventListener('resize', updateViewportBox);
+    }
   };
 
   document.querySelectorAll('.program-more-slider').forEach((slider) => {

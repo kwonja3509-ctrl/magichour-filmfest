@@ -38,6 +38,10 @@
 
           <div class="seat-layout">
             <div>
+              <div class="seat-minimap" data-seat-minimap>
+                <div class="seat-minimap-rows" data-minimap-rows></div>
+                <div class="seat-minimap-viewport" data-minimap-viewport></div>
+              </div>
               <div class="screen">SCREEN</div>
               <div class="seat-wrap" data-seat-sections></div>
               <div class="legend">
@@ -103,7 +107,7 @@
       <div class="container footer-bottom">© 2026 Magic Hour. All rights reserved.</div>
     </footer>
 
-    <div class="float-rail">
+    <div class="float-rail reserve-float-rail">
       <button class="float-btn" type="button" onclick="window.requireLoginThen('reserve.html')">🎟</button>
       <button class="float-btn" type="button" onclick="window.location.href='login.html'">👤</button>
       <button class="float-btn" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
