@@ -4229,7 +4229,31 @@ body > main {
 }
 
 @media (max-width: 640px) {
-  .brand-logo { width: auto; height: 38px; }
+  .brand-logo { width: auto; height: 28px; }
+  .topbar-inner {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 8px 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .top-menu {
+    order: 0;
+    width: auto;
+    flex: none;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 2px;
+  }
+  .menu-item > a {
+    min-height: 30px;
+    padding: 0 5px;
+    font-size: 0.6rem;
+    white-space: nowrap;
+  }
+  .top-actions { flex: none; gap: 4px; }
+  .mini-btn { padding: 6px 10px; font-size: 0.62rem; white-space: nowrap; }
   .hero-copy { gap: 0; padding: 0 20px; }
   .hero-copy .festival-name { margin-bottom: 14px; }
   .hero-logo { height: 150px; margin-top: 0; }
