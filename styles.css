@@ -4498,6 +4498,12 @@ body > main {
   }
 
   .poster-side > img.poster-side-static { display: none; }
+
+  .program-subnav:not(.admin-subnav) .program-tab {
+    font-size: 0.68rem;
+    padding: 12px 6px;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 400px) {
