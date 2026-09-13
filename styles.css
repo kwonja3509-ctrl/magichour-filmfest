@@ -2050,6 +2050,39 @@ body > main {
   font-size: 0.72rem;
 }
 
+.admin-director-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-director-photo-thumb {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #e6e2dc;
+  flex: none;
+}
+
+.admin-director-photo-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.admin-director-photo-inputs input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
 .admin-stills-add {
   display: flex;
   gap: 8px;
@@ -2187,6 +2220,21 @@ body > main {
   color: var(--soft-ink);
 }
 
+.admin-member-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.admin-member-delete {
+  color: #c0392b;
+  border-color: rgba(192,57,43,0.35);
+}
+
+.admin-member-delete:hover {
+  background: rgba(192,57,43,0.08);
+}
+
 .admin-notice-list,
 .admin-schedule-list {
   display: grid;
@@ -2263,6 +2311,13 @@ body > main {
   width: 120px;
 }
 
+.admin-schedule-creator {
+  flex: none;
+  font-size: 0.78rem;
+  color: var(--soft-ink);
+  white-space: nowrap;
+}
+
 .admin-calendar {
   margin: 18px 0 8px;
   padding: 20px;
@@ -2311,11 +2366,19 @@ body > main {
   border-radius: 8px;
   background: #fff;
   overflow: hidden;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-cal-day:not(.is-empty):hover {
+  background: rgba(230, 161, 45, 0.08);
+  border-color: var(--gold-deep);
 }
 
 .admin-cal-day.is-empty {
   background: transparent;
   border-color: transparent;
+  cursor: default;
 }
 
 .admin-cal-day.is-today {
@@ -3922,7 +3985,9 @@ body > main {
   margin-top: 0;
 }
 
-.login-modal form input {
+.login-modal form input,
+.login-modal form select,
+.login-modal form textarea {
   width: 100%;
   padding: 13px 16px;
   border: 1px solid rgba(16,34,69,0.14);
@@ -3930,9 +3995,12 @@ body > main {
   font-size: 0.92rem;
   color: var(--ink);
   background: #fff;
+  font-family: inherit;
 }
 
-.login-modal form input:focus {
+.login-modal form input:focus,
+.login-modal form select:focus,
+.login-modal form textarea:focus {
   outline: none;
   border-color: var(--navy);
 }

@@ -754,6 +754,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     stills: Array.isArray(row.stills) && row.stills.length ? row.stills : [row.image],
     synopsis: row.synopsis,
     directorBio: row.director_bio,
+    directorPhoto: row.director_photo || '',
     credits: Array.isArray(row.credits) ? row.credits : [],
   });
 
@@ -776,6 +777,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       stills: film.stills,
       synopsis: film.synopsis,
       director_bio: film.directorBio,
+      director_photo: film.directorPhoto || null,
       credits: film.credits,
     });
     return error;
@@ -793,6 +795,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       stills: film.stills,
       synopsis: film.synopsis,
       director_bio: film.directorBio,
+      director_photo: film.directorPhoto || null,
       credits: film.credits,
     }).eq('id', film.id);
     return error;
@@ -931,14 +934,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (error || !data) return defaultSchedule;
     return data.map((row) => ({
       id: row.id, category: row.category, date: row.date, endDate: row.end_date || '',
-      title: row.title, memo: row.memo || '',
+      title: row.title, memo: row.memo || '', createdByName: row.created_by_name || '',
     }));
   };
 
   const insertScheduleItem = async (item) => {
     const { error } = await supabaseClient.from('schedule').insert({
       id: item.id, category: item.category, date: item.date, end_date: item.endDate || null,
-      title: item.title, memo: item.memo,
+      title: item.title, memo: item.memo, created_by_name: item.createdByName || null,
     });
     return error;
   };
@@ -1060,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (synopsisEl) synopsisEl.textContent = film.synopsis;
     if (directorPhotoEl) {
-      directorPhotoEl.style.backgroundImage = `linear-gradient(135deg, rgba(16,34,69,0.08), rgba(16,34,69,0.18)), url('${film.image}')`;
+      directorPhotoEl.style.backgroundImage = `linear-gradient(135deg, rgba(16,34,69,0.08), rgba(16,34,69,0.18)), url('${film.directorPhoto || film.image}')`;
     }
     if (directorNameEl) directorNameEl.textContent = film.director;
     if (directorTextEl) directorTextEl.textContent = film.directorBio;
@@ -1794,6 +1797,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <input type="file" accept="image/*" data-new-still-file />
               </div>
             </div>
+            <div class="admin-field admin-field-wide">
+              <label>감독 사진 (비워두면 대표 이미지가 사용됩니다)</label>
+              <div class="admin-director-photo-row">
+                <div class="admin-director-photo-thumb" data-director-photo-thumb style="background-image:url('${film.directorPhoto || film.image}')"></div>
+                <div class="admin-director-photo-inputs">
+                  <input type="text" data-field="directorPhoto" data-director-photo-url value="${film.directorPhoto || ''}" placeholder="이미지 URL" />
+                  <input type="file" accept="image/*" data-director-photo-file />
+                </div>
+              </div>
+            </div>
             <div class="admin-field">
               <label>제목</label>
               <input type="text" data-field="title" value="${film.title}" />
@@ -1890,6 +1903,23 @@ document.addEventListener('DOMContentLoaded', async () => {
           };
           reader.readAsDataURL(file);
         });
+
+        const directorPhotoThumb = card.querySelector('[data-director-photo-thumb]');
+        const directorPhotoUrlInput = card.querySelector('[data-director-photo-url]');
+        directorPhotoUrlInput.addEventListener('input', () => {
+          directorPhotoThumb.style.backgroundImage = `url('${directorPhotoUrlInput.value}')`;
+        });
+        card.querySelector('[data-director-photo-file]').addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            directorPhotoUrlInput.value = String(reader.result);
+            directorPhotoThumb.style.backgroundImage = `url('${directorPhotoUrlInput.value}')`;
+            e.target.value = '';
+          };
+          reader.readAsDataURL(file);
+        });
       };
 
       const renderAdminFilmList = (category) => {
@@ -1918,6 +1948,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             film.year = card.querySelector('[data-field="year"]').value.trim();
             film.synopsis = card.querySelector('[data-field="synopsis"]').value.trim();
             film.directorBio = card.querySelector('[data-field="directorBio"]').value.trim();
+            film.directorPhoto = card.querySelector('[data-field="directorPhoto"]').value.trim();
             film.credits = card.querySelector('[data-field="credits"]').value
               .split('\n')
               .map((line) => line.trim())
@@ -1964,6 +1995,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           stills: ['https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1800&q=80'],
           synopsis: '시놉시스를 입력해 주세요.',
           directorBio: '감독 소개를 입력해 주세요.',
+          directorPhoto: '',
           credits: ['감독: ']
         };
         const error = await insertFilm(newFilm);
@@ -1998,9 +2030,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
             ${member.is_super_admin
               ? '<span class="admin-hint" style="margin:0;">최고관리자</span>'
-              : `<button type="button" class="secondary-btn" data-toggle-admin="${member.id}" data-current-role="${member.role}">
-                  ${member.role === 'admin' ? '관리자 해제' : '관리자 승인'}
-                </button>`}
+              : `<div class="admin-member-actions">
+                  <button type="button" class="secondary-btn" data-toggle-admin="${member.id}" data-current-role="${member.role}">
+                    ${member.role === 'admin' ? '관리자 해제' : '관리자 승인'}
+                  </button>
+                  <button type="button" class="secondary-btn admin-member-delete" data-delete-member="${member.id}" data-member-name="${member.name || member.username}">
+                    탈퇴 처리
+                  </button>
+                </div>`}
           </li>
         `).join('');
 
@@ -2011,6 +2048,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             const { error: rpcError } = await supabaseClient.rpc('set_member_role', { target_id: targetId, new_role: newRole });
             if (rpcError) {
               alert(`권한 변경 중 오류가 발생했습니다: ${rpcError.message}`);
+              return;
+            }
+            renderMembers();
+          });
+        });
+
+        memberListEl.querySelectorAll('[data-delete-member]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const targetId = btn.getAttribute('data-delete-member');
+            const targetName = btn.getAttribute('data-member-name');
+            if (!confirm(`"${targetName}" 회원을 탈퇴 처리할까요? 이 작업은 되돌릴 수 없습니다.`)) return;
+            const { error: deleteError } = await supabaseClient.from('profiles').delete().eq('id', targetId);
+            if (deleteError) {
+              alert(`탈퇴 처리 중 오류가 발생했습니다: ${deleteError.message}`);
               return;
             }
             renderMembers();
@@ -2132,6 +2183,72 @@ document.addEventListener('DOMContentLoaded', async () => {
       const pad2 = (n) => String(n).padStart(2, '0');
       const toISO = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
 
+      const getScheduleModalOverlay = () => {
+        let overlay = document.getElementById('schedule-modal-overlay');
+        if (overlay) return overlay;
+
+        overlay = document.createElement('div');
+        overlay.className = 'login-modal-overlay';
+        overlay.id = 'schedule-modal-overlay';
+        overlay.hidden = true;
+        overlay.innerHTML = `
+          <div class="login-modal" role="dialog" aria-modal="true">
+            <button class="login-modal-close" type="button" aria-label="닫기">×</button>
+            <h2>일정 추가</h2>
+            <form id="schedule-modal-form">
+              <label for="schedule-modal-category">카테고리</label>
+              <select id="schedule-modal-category">
+                ${SCHEDULE_CATEGORY_OPTIONS.map((c) => `<option value="${c}">${c}</option>`).join('')}
+              </select>
+              <label for="schedule-modal-date">날짜</label>
+              <input type="date" id="schedule-modal-date" required />
+              <label for="schedule-modal-endDate">종료일 (기간이 있는 일정만)</label>
+              <input type="date" id="schedule-modal-endDate" />
+              <label for="schedule-modal-title">일정 제목</label>
+              <input type="text" id="schedule-modal-title" placeholder="일정 제목" required />
+              <label for="schedule-modal-memo">메모 (선택)</label>
+              <input type="text" id="schedule-modal-memo" placeholder="메모" />
+              <button class="primary-btn" type="submit" style="margin-top: 18px;">추가</button>
+            </form>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const closeModal = () => { overlay.hidden = true; };
+        overlay.querySelector('.login-modal-close').addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !overlay.hidden) closeModal();
+        });
+
+        overlay.querySelector('#schedule-modal-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const newItem = {
+            id: `sch-${Date.now()}`,
+            category: overlay.querySelector('#schedule-modal-category').value,
+            date: overlay.querySelector('#schedule-modal-date').value,
+            endDate: overlay.querySelector('#schedule-modal-endDate').value,
+            title: overlay.querySelector('#schedule-modal-title').value.trim() || '새 일정',
+            memo: overlay.querySelector('#schedule-modal-memo').value.trim(),
+            createdByName: currentUser?.name || currentUser?.username || '관리자',
+          };
+          const error = await insertScheduleItem(newItem);
+          if (error) { window.alert('추가 중 오류가 발생했습니다: ' + error.message); return; }
+          scheduleData.push(newItem);
+          closeModal();
+          renderScheduleList();
+        });
+
+        return overlay;
+      };
+
+      const openScheduleAddModal = (dateISO) => {
+        const overlay = getScheduleModalOverlay();
+        overlay.querySelector('#schedule-modal-form').reset();
+        overlay.querySelector('#schedule-modal-date').value = dateISO;
+        overlay.hidden = false;
+      };
+
       const renderCalendar = () => {
         if (!calGridEl) return;
         const year = calViewDate.getFullYear();
@@ -2155,7 +2272,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const visibleEvents = dayEvents.slice(0, 3);
           const moreCount = dayEvents.length - visibleEvents.length;
           html += `
-            <div class="admin-cal-day${isToday ? ' is-today' : ''}">
+            <div class="admin-cal-day${isToday ? ' is-today' : ''}" data-date="${dateISO}">
               <div class="admin-cal-day-num">${d}</div>
               ${visibleEvents.map((ev) => `<span class="admin-cal-event" style="background:${SCHEDULE_CATEGORY_COLORS[ev.category] || '#888'}" title="${ev.title}">${ev.title}</span>`).join('')}
               ${moreCount > 0 ? `<div class="admin-cal-more">+${moreCount}개 더보기</div>` : ''}
@@ -2163,6 +2280,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           `;
         }
         calGridEl.innerHTML = html;
+
+        calGridEl.querySelectorAll('.admin-cal-day:not(.is-empty)').forEach((dayEl) => {
+          dayEl.addEventListener('click', () => openScheduleAddModal(dayEl.dataset.date));
+        });
       };
 
       if (calLegendEl) {
@@ -2189,6 +2310,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <input type="date" data-field="endDate" value="${item.endDate || ''}" title="종료일 (기간이 있는 일정만)" />
           <input type="text" data-field="title" value="${item.title}" placeholder="일정 제목" />
           <input type="text" data-field="memo" value="${item.memo || ''}" placeholder="메모 (선택)" />
+          <span class="admin-schedule-creator" title="등록자">${item.createdByName || '-'}</span>
           <button type="button" class="secondary-btn" data-delete-schedule>삭제</button>
         </div>
       `;
@@ -2235,12 +2357,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
       });
 
-      addScheduleBtn?.addEventListener('click', async () => {
-        const newItem = { id: `sch-${Date.now()}`, category: '기획·장소', date: new Date().toISOString().slice(0, 10), endDate: '', title: '새 일정', memo: '' };
-        const error = await insertScheduleItem(newItem);
-        if (error) { window.alert('추가 중 오류가 발생했습니다: ' + error.message); return; }
-        scheduleData.push(newItem);
-        renderScheduleList();
+      addScheduleBtn?.addEventListener('click', () => {
+        openScheduleAddModal(new Date().toISOString().slice(0, 10));
       });
     }
   }
