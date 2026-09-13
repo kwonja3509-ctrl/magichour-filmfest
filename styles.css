@@ -4496,6 +4496,8 @@ body > main {
     font-size: 1.2rem;
     white-space: nowrap;
   }
+
+  .poster-side > img.poster-side-static { display: none; }
 }
 
 @media (max-width: 400px) {
