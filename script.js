@@ -1679,13 +1679,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     var isSuperAdmin = !!currentUser.is_super_admin;
 
-    if (currentAdminPage === 'admin-members.html' && !isSuperAdmin) {
+    const SUPER_ADMIN_ONLY_PAGES = ['admin-members.html', 'admin-films.html', 'admin-notices.html'];
+    if (SUPER_ADMIN_ONLY_PAGES.includes(currentAdminPage) && !isSuperAdmin) {
       window.location.href = 'admin.html';
       return;
     }
 
-    const membersTabEl = document.querySelector('[data-admin-tab="members"]');
-    if (membersTabEl && !isSuperAdmin) membersTabEl.style.display = 'none';
+    if (!isSuperAdmin) {
+      ['members', 'films', 'notices'].forEach((tab) => {
+        const tabEl = document.querySelector(`[data-admin-tab="${tab}"]`);
+        if (tabEl) tabEl.style.display = 'none';
+      });
+    }
 
     const logoutBtn = document.querySelector('[data-logout]');
     logoutBtn?.addEventListener('click', () => signOutAndRedirect('index.html'));
@@ -2267,6 +2272,57 @@ document.addEventListener('DOMContentLoaded', async () => {
         overlay.hidden = false;
       };
 
+      const getScheduleDetailModalOverlay = () => {
+        let overlay = document.getElementById('schedule-detail-overlay');
+        if (overlay) return overlay;
+
+        overlay = document.createElement('div');
+        overlay.className = 'login-modal-overlay';
+        overlay.id = 'schedule-detail-overlay';
+        overlay.hidden = true;
+        overlay.innerHTML = `
+          <div class="login-modal" role="dialog" aria-modal="true">
+            <button class="login-modal-close" type="button" aria-label="닫기">×</button>
+            <h2 data-detail-title>일정 상세</h2>
+            <p class="schedule-detail-meta" data-detail-meta></p>
+            <p class="schedule-detail-memo" data-detail-memo></p>
+            <p class="admin-hint" data-detail-creator style="margin-top:14px;"></p>
+            <button class="secondary-btn admin-member-delete" type="button" data-detail-delete style="margin-top:10px; width:100%;">이 일정 취소</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const closeModal = () => { overlay.hidden = true; };
+        overlay.querySelector('.login-modal-close').addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !overlay.hidden) closeModal();
+        });
+
+        return overlay;
+      };
+
+      const openScheduleDetailModal = (item) => {
+        const overlay = getScheduleDetailModalOverlay();
+        overlay.querySelector('[data-detail-title]').textContent = item.title;
+        const dateLabel = item.endDate && item.endDate !== item.date ? `${item.date} ~ ${item.endDate}` : item.date;
+        overlay.querySelector('[data-detail-meta]').textContent = `${item.category} · ${dateLabel}`;
+        overlay.querySelector('[data-detail-memo]').textContent = item.memo || '메모 없음';
+        overlay.querySelector('[data-detail-creator]').textContent = `등록자: ${item.createdByName || '-'}`;
+
+        overlay.querySelector('[data-detail-delete]').onclick = async () => {
+          if (!confirm(`"${item.title}" 일정을 취소할까요?`)) return;
+          const error = await deleteScheduleItem(item.id);
+          if (error) { window.alert('삭제 중 오류가 발생했습니다: ' + error.message); return; }
+          const index = scheduleData.findIndex((s) => s.id === item.id);
+          if (index !== -1) scheduleData.splice(index, 1);
+          overlay.hidden = true;
+          renderScheduleList();
+        };
+
+        overlay.hidden = false;
+      };
+
       const renderCalendar = () => {
         if (!calGridEl) return;
         const year = calViewDate.getFullYear();
@@ -2292,7 +2348,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           html += `
             <div class="admin-cal-day${isToday ? ' is-today' : ''}" data-date="${dateISO}">
               <div class="admin-cal-day-num">${d}</div>
-              ${visibleEvents.map((ev) => `<span class="admin-cal-event" style="background:${SCHEDULE_CATEGORY_COLORS[ev.category] || '#888'}" title="${ev.title}">${ev.title}</span>`).join('')}
+              ${visibleEvents.map((ev) => `<span class="admin-cal-event" data-schedule-id="${ev.id}" style="background:${SCHEDULE_CATEGORY_COLORS[ev.category] || '#888'}" title="${ev.title}">${ev.title}</span>`).join('')}
               ${moreCount > 0 ? `<div class="admin-cal-more">+${moreCount}개 더보기</div>` : ''}
             </div>
           `;
@@ -2301,6 +2357,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         calGridEl.querySelectorAll('.admin-cal-day:not(.is-empty)').forEach((dayEl) => {
           dayEl.addEventListener('click', () => openScheduleAddModal(dayEl.dataset.date));
+        });
+
+        calGridEl.querySelectorAll('.admin-cal-event').forEach((el) => {
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const item = scheduleData.find((s) => s.id === el.dataset.scheduleId);
+            if (item) openScheduleDetailModal(item);
+          });
         });
       };
 

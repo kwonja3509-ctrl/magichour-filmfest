@@ -2404,6 +2404,22 @@ body > main {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+.admin-cal-event:hover {
+  filter: brightness(1.15);
+}
+
+.schedule-detail-meta {
+  color: var(--soft-ink);
+  font-size: 0.88rem;
+  margin: 4px 0 0;
+}
+
+.schedule-detail-memo {
+  margin: 10px 0 0;
+  line-height: 1.6;
 }
 
 .admin-cal-more {
