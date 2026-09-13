@@ -4457,6 +4457,29 @@ body > main {
   .program-film-info { padding: 8px 0 0; gap: 3px; }
   .program-film-info strong { font-size: 0.85rem; }
   .program-film-info span { font-size: 0.68rem; }
+
+  .map-shell { min-height: 260px; }
+  .map-shell iframe { min-height: 260px; }
+
+  .home-program-cat { font-size: 0.95rem; margin-bottom: 6px; }
+  .home-program-title { font-size: 0.8rem; }
+  .home-notice-tag { font-size: 0.62rem; padding: 3px 9px; }
+  .home-notice-card h3 { font-size: 0.85rem; }
+  .home-notice-date { font-size: 0.68rem; }
+  .section-tag { font-size: 0.62rem; }
+  .info-block h3 { font-size: 0.92rem; }
+  .info-block p { font-size: 0.82rem; }
+
+  .tickets-page-title {
+    font-size: 1.05rem !important;
+    white-space: nowrap;
+    margin: 24px 0 20px !important;
+  }
+
+  .split-copy h2 {
+    font-size: 1.2rem;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 400px) {
