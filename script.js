@@ -1598,21 +1598,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!userBookings || !userBookings.length) {
         bookingList.innerHTML = '<li>아직 예매 내역이 없습니다.</li>';
       } else {
-        bookingList.innerHTML = userBookings.map((booking) => `
-          <li>
-            <div>
-              <strong>${new Date(booking.created_at).toLocaleDateString()}</strong><br>
-              ${(booking.seats || []).join(', ')}
+        bookingList.innerHTML = `<div class="ticket-cards-grid">${userBookings.map((booking) => `
+          <div class="ticket-card-container ticket-holographic" data-booking-card="${booking.id}">
+            <div class="ticket-bg"></div>
+            <div class="ticket-header">🎬</div>
+            <div class="ticket-body">
+              <strong>MAGIC HOUR</strong><br>
+              ${new Date(booking.created_at).toLocaleDateString()}<br>
+              <small>${(booking.seats || []).join(', ')}</small>
             </div>
-            <button class="secondary-btn" type="button" data-cancel-booking="${booking.id}">취소</button>
-          </li>
-        `).join('');
+            <div class="ticket-footer">
+              <div class="ticket-barcode"></div>
+            </div>
+            <div class="ticket-symbol">★</div>
+          </div>
+        `).join('')}</div>`;
 
-        bookingList.querySelectorAll('[data-cancel-booking]').forEach((btn) => {
-          btn.addEventListener('click', async () => {
-            const bookingId = btn.getAttribute('data-cancel-booking');
-            await supabaseClient.from('bookings').delete().eq('id', bookingId);
-            window.location.reload();
+        bookingList.querySelectorAll('[data-booking-card]').forEach((card) => {
+          card.addEventListener('contextmenu', async (e) => {
+            e.preventDefault();
+            const bookingId = card.getAttribute('data-booking-card');
+            if (confirm('이 예매를 취소할까요?')) {
+              await supabaseClient.from('bookings').delete().eq('id', bookingId);
+              window.location.reload();
+            }
           });
         });
       }
@@ -2476,6 +2485,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             sponsor.memo = card.querySelector('[data-field="memo"]').value.trim();
             const error = await updateSponsor(sponsor);
             if (error) { window.alert('저장 중 오류가 발생했습니다: ' + error.message); return; }
+
+            // 현금 후원이 확정/완료되면 정산에 수입 추가
+            if (sponsor.type === '현금' && (sponsor.status === '확정' || sponsor.status === '완료')) {
+              const amountNum = Number(sponsor.amount.replace(/[^\d]/g, '')) || 0;
+              if (amountNum > 0) {
+                const settlementItem = {
+                  id: `settlement-${Date.now()}`,
+                  date: new Date().toISOString().split('T')[0],
+                  type: '수입',
+                  category: '후원',
+                  item: sponsor.name,
+                  amount: amountNum,
+                };
+                await insertSettlementItem(settlementItem);
+              }
+            }
             renderSponsorSummary();
 
             const statusEl = card.querySelector('[data-save-status]');
