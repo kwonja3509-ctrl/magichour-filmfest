@@ -4520,6 +4520,17 @@ body > main {
 }
 
 /* Ticket card styles */
+.detail-panel .booking-list.ticket-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+  margin: 0 -24px;
+  padding-left: 24px;
+  padding-right: 24px;
+  list-style: none;
+}
+
 .booking-list.ticket-cards-grid {
   display: grid !important;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -4541,8 +4552,10 @@ body > main {
   grid-template-rows: auto 1fr auto;
   gap: 1rem;
   grid-template-areas: "header" "body" "footer";
-  width: 180px;
+  width: 100%;
+  max-width: 180px;
   height: 320px;
+  margin: 0 auto;
   padding: 12px 0;
   font-family: "Escoredream", sans-serif;
   font-size: 1rem;
