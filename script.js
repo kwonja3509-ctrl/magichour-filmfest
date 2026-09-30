@@ -1589,6 +1589,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (emailEl) emailEl.textContent = currentUser.email || '—';
 
     if (bookingList) {
+      bookingList.classList.add('ticket-cards-grid');
       const { data: userBookings } = await supabaseClient
         .from('bookings')
         .select('*')
@@ -1596,9 +1597,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         .order('created_at', { ascending: false });
 
       if (!userBookings || !userBookings.length) {
-        bookingList.innerHTML = '<li>아직 예매 내역이 없습니다.</li>';
+        bookingList.innerHTML = '<div style="grid-column: 1/-1; padding: 2rem; text-align: center; color: #999;">아직 예매 내역이 없습니다.</div>';
       } else {
-        bookingList.innerHTML = `<div class="ticket-cards-grid">${userBookings.map((booking) => `
+        bookingList.innerHTML = userBookings.map((booking) => `
           <div class="ticket-card-container ticket-holographic" data-booking-card="${booking.id}">
             <div class="ticket-bg"></div>
             <div class="ticket-header">🎬</div>
@@ -1612,7 +1613,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
             <div class="ticket-symbol">★</div>
           </div>
-        `).join('')}</div>`;
+        `).join('');
 
         bookingList.querySelectorAll('[data-booking-card]').forEach((card) => {
           card.addEventListener('contextmenu', async (e) => {

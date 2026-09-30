@@ -4520,6 +4520,14 @@ body > main {
 }
 
 /* Ticket card styles */
+.booking-list.ticket-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+  list-style: none;
+}
+
 .ticket-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -4563,14 +4571,14 @@ body > main {
   background-color: #fff;
   filter: url(#bump);
   mask:
-    radial-gradient(circle at 50% 0, #fff0 7px, #000 8px),
-    radial-gradient(circle at 50% 100%, #fff0 7px, #000 8px),
+    radial-gradient(circle at 50% 0, #fff0 calc(12px - 5px), #000 calc(12px - 4px)),
+    radial-gradient(circle at 50% 100%, #fff0 calc(12px - 5px), #000 calc(12px - 4px)),
     radial-gradient(circle 8px at left center, #000 98%, #0000 100%),
     radial-gradient(circle 8px at right center, #000 98%, #0000 100%),
     repeating-linear-gradient(90deg, #000 10px, #000 15px, #0000 16px, #0000 24px);
   mask-repeat: repeat-x, repeat-x, no-repeat, no-repeat, repeat-x;
-  mask-size: 24px 100%, 24px 100%, 16px 16px, 16px 16px, 10px 2px;
-  mask-position: 6px top, 6px bottom, left 70px, right 70px, 0 77px;
+  mask-size: calc(12px * 2) 100%, calc(12px * 2) 100%, 16px 16px, 16px 16px, 10px 2px;
+  mask-position: calc(0.5 * 12px) top, calc(0.5 * 12px) bottom, left 70px, right 70px, 0 calc(70px + 7px);
   mask-composite: intersect, exclude, add, add;
 }
 
