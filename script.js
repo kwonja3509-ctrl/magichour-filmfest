@@ -1589,43 +1589,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (emailEl) emailEl.textContent = currentUser.email || '—';
 
     if (bookingList) {
-      bookingList.classList.add('ticket-cards-grid');
       const { data: userBookings } = await supabaseClient
         .from('bookings')
         .select('*')
         .eq('user_id', currentUser.id)
         .order('created_at', { ascending: false });
 
-      console.log('📋 마이페이지 - 사용자:', currentUser.id);
-      console.log('📋 조회된 예매:', userBookings);
-
       if (!userBookings || !userBookings.length) {
-        bookingList.innerHTML = '<div style="grid-column: 1/-1; padding: 2rem; text-align: center; color: #999;">아직 예매 내역이 없습니다.</div>';
+        bookingList.innerHTML = '<li>아직 예매 내역이 없습니다.</li>';
       } else {
         bookingList.innerHTML = userBookings.map((booking) => `
-          <div class="ticket-card-container ticket-holographic" data-booking-card="${booking.id}">
-            <div class="ticket-bg"></div>
-            <div class="ticket-header">🎬</div>
-            <div class="ticket-body">
-              <strong>MAGIC HOUR</strong><br>
-              ${new Date(booking.created_at).toLocaleDateString()}<br>
-              <small>${(booking.seats || []).join(', ')}</small>
+          <li>
+            <div>
+              <strong>${new Date(booking.created_at).toLocaleDateString()}</strong><br>
+              ${(booking.seats || []).join(', ')}
             </div>
-            <div class="ticket-footer">
-              <div class="ticket-barcode"></div>
-            </div>
-            <div class="ticket-symbol">★</div>
-          </div>
+            <button class="secondary-btn" type="button" data-cancel-booking="${booking.id}">취소</button>
+          </li>
         `).join('');
 
-        bookingList.querySelectorAll('[data-booking-card]').forEach((card) => {
-          card.addEventListener('contextmenu', async (e) => {
-            e.preventDefault();
-            const bookingId = card.getAttribute('data-booking-card');
-            if (confirm('이 예매를 취소할까요?')) {
-              await supabaseClient.from('bookings').delete().eq('id', bookingId);
-              window.location.reload();
-            }
+        bookingList.querySelectorAll('[data-cancel-booking]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const bookingId = btn.getAttribute('data-cancel-booking');
+            await supabaseClient.from('bookings').delete().eq('id', bookingId);
+            window.location.reload();
           });
         });
       }
