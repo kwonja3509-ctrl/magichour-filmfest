@@ -1596,6 +1596,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         .eq('user_id', currentUser.id)
         .order('created_at', { ascending: false });
 
+      console.log('📋 마이페이지 - 사용자:', currentUser.id);
+      console.log('📋 조회된 예매:', userBookings);
+
       if (!userBookings || !userBookings.length) {
         bookingList.innerHTML = '<div style="grid-column: 1/-1; padding: 2rem; text-align: center; color: #999;">아직 예매 내역이 없습니다.</div>';
       } else {
