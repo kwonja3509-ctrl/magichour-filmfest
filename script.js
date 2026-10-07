@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           return;
         }
 
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', window.location.href).href });
         if (error) {
           errorEl.textContent = '재설정 메일 발송 중 오류가 발생했습니다.';
           errorEl.hidden = false;
@@ -559,12 +559,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('입력하신 아이디를 찾을 수 없습니다.');
         return;
       }
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', window.location.href).href });
       if (error) {
         alert('재설정 메일 발송 중 오류가 발생했습니다.');
         return;
       }
       alert('가입하신 이메일로 비밀번호 재설정 링크를 보내드렸습니다.');
+    });
+  }
+
+
+  // 비밀번호 재설정 페이지: 메일의 링크로 들어오면 임시 세션이 생기고, 그 상태에서 새 비밀번호를 저장
+  if (window.location.pathname.endsWith('reset-password.html')) {
+    const statusEl = document.querySelector('[data-reset-status]');
+    const formEl = document.getElementById('newPasswordForm');
+    const errEl = document.querySelector('[data-reset-error]');
+    let ready = false;
+    const showForm = () => {
+      if (ready) return;
+      ready = true;
+      statusEl.hidden = true;
+      formEl.hidden = false;
+      document.getElementById('new-password').focus();
+    };
+    supabaseClient.auth.onAuthStateChange((event) => { if (event === 'PASSWORD_RECOVERY') showForm(); });
+    // 링크 해석이 끝난 뒤에도 재설정 세션이 없으면 만료/잘못된 링크
+    setTimeout(async () => {
+      if (ready) return;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && /type=recovery/.test(window.location.hash + window.location.search)) { showForm(); return; }
+      statusEl.textContent = '유효하지 않거나 만료된 링크예요. 비밀번호 재설정 링크를 다시 받아 주세요.';
+    }, 2500);
+
+    formEl.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.hidden = true;
+      const pw = document.getElementById('new-password').value;
+      const pw2 = document.getElementById('new-password2').value;
+      const fail = (msg) => { errEl.textContent = msg; errEl.hidden = false; };
+      if (pw.length < 6) { fail('비밀번호는 6자 이상이어야 해요.'); return; }
+      if (pw !== pw2) { fail('두 비밀번호가 서로 달라요.'); return; }
+      const btn = formEl.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      const { error } = await supabaseClient.auth.updateUser({ password: pw });
+      if (error) {
+        btn.disabled = false;
+        fail(/same|different/i.test(error.message) ? '이전과 다른 비밀번호를 입력해 주세요.' : '비밀번호를 변경하지 못했어요. 링크가 만료됐다면 다시 받아 주세요.');
+        return;
+      }
+      formEl.hidden = true;
+      statusEl.hidden = false;
+      statusEl.textContent = '비밀번호를 변경했어요. 잠시 후 로그인 화면으로 이동합니다.';
+      await supabaseClient.auth.signOut();
+      setTimeout(() => { window.location.href = 'login.html'; }, 1800);
     });
   }
 
