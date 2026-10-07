@@ -2239,267 +2239,271 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (currentAdminPage === 'admin-schedule.html') {
-    const scheduleListEl = document.querySelector('[data-admin-schedule-list]');
-    const addScheduleBtn = document.querySelector('[data-add-schedule]');
-    const scheduleFilterEl = document.querySelector('[data-schedule-filter]');
-    if (scheduleListEl) {
+    const calGridEl = document.querySelector('[data-admin-calendar]');
+    const listEl = document.querySelector('[data-admin-schedule-list]');
+    if (calGridEl && listEl) {
       const scheduleData = await loadSchedule();
-      const SCHEDULE_CATEGORY_OPTIONS = ['홍보', '기획·장소', '운영·제작', '굿즈', '후원'];
-      const SCHEDULE_CATEGORY_COLORS = {
-        '홍보': '#e6a12d',
-        '기획·장소': '#102245',
-        '운영·제작': '#2f8f7a',
-        '굿즈': '#a35bc9',
-        '후원': '#c0553d',
-      };
-      let activeScheduleCat = 'all';
-
-      const calMonthLabel = document.querySelector('[data-cal-month]');
-      const calGridEl = document.querySelector('[data-admin-calendar]');
-      const calLegendEl = document.querySelector('[data-calendar-legend]');
-      const calPrevBtn = document.querySelector('[data-cal-prev]');
-      const calNextBtn = document.querySelector('[data-cal-next]');
-      const calViewDate = new Date();
+      const CATS = ['홍보', '기획·장소', '운영·제작', '굿즈', '후원'];
+      const COLORS = { '홍보': '#e6a12d', '기획·장소': '#102245', '운영·제작': '#2f8f7a', '굿즈': '#a35bc9', '후원': '#c0553d' };
+      const $ = (sel) => document.querySelector(sel);
+      const calMonthLabel = $('[data-cal-month]');
+      const upcomingEl = $('[data-upcoming]');
+      const allBtn = $('[data-toggle-all]');
+      const msgEl = $('[data-schedule-msg]');
+      const filterEl = $('[data-schedule-filter]');
+      const viewDate = new Date();
+      viewDate.setDate(1);
+      let activeCat = 'all';
 
       const pad2 = (n) => String(n).padStart(2, '0');
       const toISO = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
+      const todayISO = () => { const n = new Date(); return toISO(n.getFullYear(), n.getMonth(), n.getDate()); };
+      const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const rangeLabel = (i) => (i.endDate && i.endDate !== i.date ? `${i.date.replaceAll('-', '.')} ~ ${i.endDate.replaceAll('-', '.')}` : i.date.replaceAll('-', '.'));
+      const showMsg = (text, isError) => {
+        msgEl.textContent = text;
+        msgEl.hidden = !text;
+        msgEl.classList.toggle('is-error', !!isError);
+        if (text && !isError) setTimeout(() => { if (msgEl.textContent === text) msgEl.hidden = true; }, 2500);
+      };
+      const visible = () => scheduleData.filter((i) => activeCat === 'all' || i.category === activeCat);
+      const chip = (cat) => `<span class="sch-chip" style="background:${COLORS[cat] || '#888'}">${esc(cat)}</span>`;
 
-      const getScheduleModalOverlay = () => {
-        let overlay = document.getElementById('schedule-modal-overlay');
-        if (overlay) return overlay;
+      const legendEl = $('[data-calendar-legend]');
+      if (legendEl) legendEl.innerHTML = CATS.map((c) => `<span><span class="admin-cal-dot" style="background:${COLORS[c]}"></span>${c}</span>`).join('');
 
-        overlay = document.createElement('div');
-        overlay.className = 'login-modal-overlay';
-        overlay.id = 'schedule-modal-overlay';
-        overlay.hidden = true;
-        overlay.innerHTML = `
-          <div class="login-modal" role="dialog" aria-modal="true">
-            <button class="login-modal-close" type="button" aria-label="닫기">×</button>
-            <h2>일정 추가</h2>
-            <form id="schedule-modal-form">
-              <label for="schedule-modal-category">카테고리</label>
-              <select id="schedule-modal-category">
-                ${SCHEDULE_CATEGORY_OPTIONS.map((c) => `<option value="${c}">${c}</option>`).join('')}
-              </select>
-              <label for="schedule-modal-date">날짜</label>
-              <input type="date" id="schedule-modal-date" required />
-              <label for="schedule-modal-endDate">종료일 (기간이 있는 일정만)</label>
-              <input type="date" id="schedule-modal-endDate" />
-              <label for="schedule-modal-title">일정 제목</label>
-              <input type="text" id="schedule-modal-title" placeholder="일정 제목" required />
-              <label for="schedule-modal-memo">메모 (선택)</label>
-              <input type="text" id="schedule-modal-memo" placeholder="메모" />
-              <button class="primary-btn" type="submit" style="margin-top: 18px;">추가</button>
-            </form>
-          </div>
-        `;
-        document.body.appendChild(overlay);
+      // ---- 추가/수정 팝업 (하나로 통합) ----
+      let editing = null;
+      const modal = document.createElement('div');
+      modal.className = 'login-modal-overlay';
+      modal.hidden = true;
+      modal.innerHTML = `
+        <div class="login-modal" role="dialog" aria-modal="true">
+          <button class="login-modal-close" type="button" aria-label="닫기">×</button>
+          <h2 data-m-title>일정 추가</h2>
+          <form data-m-form>
+            <label for="sm-cat">카테고리</label>
+            <select id="sm-cat">${CATS.map((c) => `<option value="${c}">${c}</option>`).join('')}</select>
+            <label for="sm-title">일정 제목</label>
+            <input type="text" id="sm-title" required />
+            <label for="sm-date">시작일</label>
+            <input type="date" id="sm-date" required />
+            <label for="sm-end">종료일 <small>(기간이 있을 때만)</small></label>
+            <input type="date" id="sm-end" />
+            <label for="sm-memo">메모 <small>(선택)</small></label>
+            <input type="text" id="sm-memo" />
+            <p class="schedule-msg is-error" data-m-error hidden></p>
+            <button class="primary-btn" type="submit" style="margin-top: 16px; width: 100%;" data-m-save>추가</button>
+            <button class="secondary-btn" type="button" style="margin-top: 8px; width: 100%;" data-m-delete hidden>삭제</button>
+          </form>
+          <p class="admin-hint" data-m-creator style="margin-top: 12px;"></p>
+        </div>`;
+      document.body.appendChild(modal);
+      const m = (sel) => modal.querySelector(sel);
+      const closeModal = () => { modal.hidden = true; editing = null; };
+      m('.login-modal-close').addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
 
-        const closeModal = () => { overlay.hidden = true; };
-        overlay.querySelector('.login-modal-close').addEventListener('click', closeModal);
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && !overlay.hidden) closeModal();
-        });
-
-        overlay.querySelector('#schedule-modal-form').addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const newItem = {
-            id: `sch-${Date.now()}`,
-            category: overlay.querySelector('#schedule-modal-category').value,
-            date: overlay.querySelector('#schedule-modal-date').value,
-            endDate: overlay.querySelector('#schedule-modal-endDate').value,
-            title: overlay.querySelector('#schedule-modal-title').value.trim() || '새 일정',
-            memo: overlay.querySelector('#schedule-modal-memo').value.trim(),
-            createdByName: currentUser?.name || currentUser?.username || '관리자',
-          };
-          const error = await insertScheduleItem(newItem);
-          if (error) { window.alert('추가 중 오류가 발생했습니다: ' + error.message); return; }
-          scheduleData.push(newItem);
-          closeModal();
-          renderScheduleList();
-        });
-
-        return overlay;
+      const openModal = (item, dateISO) => {
+        editing = item || null;
+        m('[data-m-title]').textContent = item ? '일정 수정' : '일정 추가';
+        m('[data-m-save]').textContent = item ? '저장' : '추가';
+        m('[data-m-delete]').hidden = !item;
+        m('[data-m-delete]').textContent = '삭제';
+        delete m('[data-m-delete]').dataset.armed;
+        m('[data-m-error]').hidden = true;
+        m('#sm-cat').value = item ? item.category : CATS[0];
+        m('#sm-title').value = item ? item.title : '';
+        m('#sm-date').value = item ? item.date : (dateISO || todayISO());
+        m('#sm-end').value = item ? (item.endDate || '') : '';
+        m('#sm-memo').value = item ? (item.memo || '') : '';
+        m('[data-m-creator]').textContent = item ? `등록자: ${item.createdByName || '-'}` : '';
+        modal.hidden = false;
+        m('#sm-title').focus();
       };
 
-      const openScheduleAddModal = (dateISO) => {
-        const overlay = getScheduleModalOverlay();
-        overlay.querySelector('#schedule-modal-form').reset();
-        overlay.querySelector('#schedule-modal-date').value = dateISO;
-        overlay.hidden = false;
-      };
+      m('[data-m-form]').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errEl = m('[data-m-error]');
+        const date = m('#sm-date').value;
+        const endDate = m('#sm-end').value;
+        if (endDate && endDate < date) { errEl.textContent = '종료일이 시작일보다 빠릅니다.'; errEl.hidden = false; return; }
+        const fields = { category: m('#sm-cat').value, date, endDate, title: m('#sm-title').value.trim() || '새 일정', memo: m('#sm-memo').value.trim() };
+        if (editing) {
+          Object.assign(editing, fields);
+          const error = await updateScheduleItem(editing);
+          if (error) { errEl.textContent = '저장하지 못했어요: ' + error.message; errEl.hidden = false; return; }
+          showMsg('수정했어요.');
+        } else {
+          const item = { id: `sch-${Date.now()}`, ...fields, createdByName: currentUser?.name || currentUser?.username || '관리자' };
+          const error = await insertScheduleItem(item);
+          if (error) { errEl.textContent = '추가하지 못했어요: ' + error.message; errEl.hidden = false; return; }
+          scheduleData.push(item);
+          showMsg('추가했어요.');
+        }
+        closeModal();
+        renderAll();
+      });
 
-      const getScheduleDetailModalOverlay = () => {
-        let overlay = document.getElementById('schedule-detail-overlay');
-        if (overlay) return overlay;
+      // 삭제는 팝업(confirm) 대신 두 번 눌러 확인
+      m('[data-m-delete]').addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        if (!btn.dataset.armed) {
+          btn.dataset.armed = '1';
+          btn.textContent = '한 번 더 누르면 삭제돼요';
+          setTimeout(() => { delete btn.dataset.armed; btn.textContent = '삭제'; }, 3000);
+          return;
+        }
+        const error = await deleteScheduleItem(editing.id);
+        if (error) { const errEl = m('[data-m-error]'); errEl.textContent = '삭제하지 못했어요: ' + error.message; errEl.hidden = false; return; }
+        scheduleData.splice(scheduleData.findIndex((s) => s.id === editing.id), 1);
+        closeModal();
+        showMsg('삭제했어요.');
+        renderAll();
+      });
 
-        overlay = document.createElement('div');
-        overlay.className = 'login-modal-overlay';
-        overlay.id = 'schedule-detail-overlay';
-        overlay.hidden = true;
-        overlay.innerHTML = `
-          <div class="login-modal" role="dialog" aria-modal="true">
-            <button class="login-modal-close" type="button" aria-label="닫기">×</button>
-            <h2 data-detail-title>일정 상세</h2>
-            <p class="schedule-detail-meta" data-detail-meta></p>
-            <p class="schedule-detail-memo" data-detail-memo></p>
-            <p class="admin-hint" data-detail-creator style="margin-top:14px;"></p>
-            <button class="secondary-btn admin-member-delete" type="button" data-detail-delete style="margin-top:10px; width:100%;">이 일정 취소</button>
-          </div>
-        `;
-        document.body.appendChild(overlay);
-
-        const closeModal = () => { overlay.hidden = true; };
-        overlay.querySelector('.login-modal-close').addEventListener('click', closeModal);
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && !overlay.hidden) closeModal();
-        });
-
-        return overlay;
-      };
-
-      const openScheduleDetailModal = (item) => {
-        const overlay = getScheduleDetailModalOverlay();
-        overlay.querySelector('[data-detail-title]').textContent = item.title;
-        const dateLabel = item.endDate && item.endDate !== item.date ? `${item.date} ~ ${item.endDate}` : item.date;
-        overlay.querySelector('[data-detail-meta]').textContent = `${item.category} · ${dateLabel}`;
-        overlay.querySelector('[data-detail-memo]').textContent = item.memo || '메모 없음';
-        overlay.querySelector('[data-detail-creator]').textContent = `등록자: ${item.createdByName || '-'}`;
-
-        overlay.querySelector('[data-detail-delete]').onclick = async () => {
-          if (!confirm(`"${item.title}" 일정을 취소할까요?`)) return;
-          const error = await deleteScheduleItem(item.id);
-          if (error) { window.alert('삭제 중 오류가 발생했습니다: ' + error.message); return; }
-          const index = scheduleData.findIndex((s) => s.id === item.id);
-          if (index !== -1) scheduleData.splice(index, 1);
-          overlay.hidden = true;
-          renderScheduleList();
-        };
-
-        overlay.hidden = false;
-      };
-
+      // ---- 화면 그리기 ----
       const renderCalendar = () => {
-        if (!calGridEl) return;
-        const year = calViewDate.getFullYear();
-        const month = calViewDate.getMonth();
+        const year = viewDate.getFullYear();
+        const month = viewDate.getMonth();
         calMonthLabel.textContent = `${year}년 ${month + 1}월`;
-
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const now = new Date();
-        const todayISO = toISO(now.getFullYear(), now.getMonth(), now.getDate());
-        const schedule = scheduleData;
-
+        const today = todayISO();
+        const items = visible();
         let html = '';
-        for (let i = 0; i < firstDay; i++) {
-          html += '<div class="admin-cal-day is-empty"></div>';
-        }
+        for (let i = 0; i < firstDay; i++) html += '<div class="admin-cal-day is-empty"></div>';
         for (let d = 1; d <= daysInMonth; d++) {
-          const dateISO = toISO(year, month, d);
-          const dayEvents = schedule.filter((item) => dateISO >= item.date && dateISO <= (item.endDate || item.date));
-          const isToday = dateISO === todayISO;
-          const visibleEvents = dayEvents.slice(0, 3);
-          const moreCount = dayEvents.length - visibleEvents.length;
-          html += `
-            <div class="admin-cal-day${isToday ? ' is-today' : ''}" data-date="${dateISO}">
-              <div class="admin-cal-day-num">${d}</div>
-              ${visibleEvents.map((ev) => `<span class="admin-cal-event" data-schedule-id="${ev.id}" style="background:${SCHEDULE_CATEGORY_COLORS[ev.category] || '#888'}" title="${ev.title}">${ev.title}</span>`).join('')}
-              ${moreCount > 0 ? `<div class="admin-cal-more">+${moreCount}개 더보기</div>` : ''}
-            </div>
-          `;
+          const iso = toISO(year, month, d);
+          const dayEvents = items.filter((it) => iso >= it.date && iso <= (it.endDate || it.date));
+          const shown = dayEvents.slice(0, 3);
+          const more = dayEvents.length - shown.length;
+          html += `<div class="admin-cal-day${iso === today ? ' is-today' : ''}" data-date="${iso}">
+            <div class="admin-cal-day-num">${d}</div>
+            ${shown.map((ev) => `<span class="admin-cal-event" draggable="true" data-from="${iso}" data-schedule-id="${esc(ev.id)}" style="background:${COLORS[ev.category] || '#888'}" title="${esc(ev.title)}">${esc(ev.title)}</span>`).join('')}
+            ${more > 0 ? `<div class="admin-cal-more" data-more-date="${iso}">+${more}개 더보기</div>` : ''}
+          </div>`;
         }
         calGridEl.innerHTML = html;
-
-        calGridEl.querySelectorAll('.admin-cal-day:not(.is-empty)').forEach((dayEl) => {
-          dayEl.addEventListener('click', () => openScheduleAddModal(dayEl.dataset.date));
-        });
-
+        calGridEl.querySelectorAll('.admin-cal-day:not(.is-empty)').forEach((el) => el.addEventListener('click', () => openModal(null, el.dataset.date)));
+        // 일정을 끌어서 다른 날짜로 옮기기 (잡은 날짜가 놓은 날짜로 가도록 기간 전체를 이동)
         calGridEl.querySelectorAll('.admin-cal-event').forEach((el) => {
-          el.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const item = scheduleData.find((s) => s.id === el.dataset.scheduleId);
-            if (item) openScheduleDetailModal(item);
+          el.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', `${el.dataset.scheduleId}|${el.dataset.from}`);
+            e.dataTransfer.effectAllowed = 'move';
+            el.classList.add('is-dragging');
+          });
+          el.addEventListener('dragend', () => el.classList.remove('is-dragging'));
+        });
+        calGridEl.querySelectorAll('.admin-cal-day:not(.is-empty)').forEach((dayEl) => {
+          dayEl.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; dayEl.classList.add('drag-over'); });
+          dayEl.addEventListener('dragleave', () => dayEl.classList.remove('drag-over'));
+          dayEl.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            calGridEl.querySelectorAll('.drag-over').forEach((d) => d.classList.remove('drag-over'));
+            const [id, fromISO] = (e.dataTransfer.getData('text/plain') || '').split('|');
+            const item = scheduleData.find((x) => x.id === id);
+            const toISOStr = dayEl.dataset.date;
+            if (!item || !fromISO || fromISO === toISOStr) return;
+            const toUTC = (iso) => Date.UTC(...iso.split('-').map((n, i) => (i === 1 ? Number(n) - 1 : Number(n))));
+            const diffDays = Math.round((toUTC(toISOStr) - toUTC(fromISO)) / 86400000);
+            const shift = (iso) => { const d = new Date(toUTC(iso) + diffDays * 86400000); return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`; };
+            const before = { date: item.date, endDate: item.endDate };
+            item.date = shift(item.date);
+            if (item.endDate) item.endDate = shift(item.endDate);
+            const error = await updateScheduleItem(item);
+            if (error) {
+              Object.assign(item, before);
+              showMsg('옮기지 못했어요: ' + error.message, true);
+            } else {
+              showMsg(`"${item.title}" ${before.date.slice(5).replace('-', '.')} → ${item.date.slice(5).replace('-', '.')} 로 옮겼어요.`);
+            }
+            renderAll();
           });
         });
+        calGridEl.querySelectorAll('[data-more-date]').forEach((el) => el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openDayList(el.dataset.moreDate);
+        }));
+        calGridEl.querySelectorAll('.admin-cal-event').forEach((el) => el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const item = scheduleData.find((s) => s.id === el.dataset.scheduleId);
+          if (item) openModal(item);
+        }));
       };
 
-      if (calLegendEl) {
-        calLegendEl.innerHTML = SCHEDULE_CATEGORY_OPTIONS.map((c) => `
-          <span><span class="admin-cal-dot" style="background:${SCHEDULE_CATEGORY_COLORS[c]}"></span>${c}</span>
-        `).join('');
-      }
+      const rowHTML = (it) => `
+        <button type="button" class="sch-row" data-edit-id="${esc(it.id)}">
+          <span class="sch-date">${rangeLabel(it)}</span>
+          ${chip(it.category)}
+          <span class="sch-title">${esc(it.title)}</span>
+          ${it.memo ? `<span class="sch-memo">${esc(it.memo)}</span>` : ''}
+        </button>`;
+      const bindRows = (root, before) => root.querySelectorAll('[data-edit-id]').forEach((b) => b.addEventListener('click', () => {
+        const item = scheduleData.find((s) => s.id === b.dataset.editId);
+        if (before) before();
+        if (item) openModal(item);
+      }));
 
-      calPrevBtn?.addEventListener('click', () => {
-        calViewDate.setMonth(calViewDate.getMonth() - 1);
-        renderCalendar();
-      });
-      calNextBtn?.addEventListener('click', () => {
-        calViewDate.setMonth(calViewDate.getMonth() + 1);
-        renderCalendar();
-      });
+      // ---- 하루 일정 목록 팝업 ("+N개 더보기") ----
+      const dayModal = document.createElement('div');
+      dayModal.className = 'login-modal-overlay';
+      dayModal.hidden = true;
+      dayModal.innerHTML = `
+        <div class="login-modal" role="dialog" aria-modal="true">
+          <button class="login-modal-close" type="button" aria-label="닫기">×</button>
+          <h2 data-day-title></h2>
+          <div class="schedule-day-list" data-day-list></div>
+          <button class="primary-btn" type="button" data-day-add style="margin-top: 16px; width: 100%;">+ 이 날짜에 일정 추가</button>
+        </div>`;
+      document.body.appendChild(dayModal);
+      const closeDay = () => { dayModal.hidden = true; };
+      dayModal.querySelector('.login-modal-close').addEventListener('click', closeDay);
+      dayModal.addEventListener('click', (e) => { if (e.target === dayModal) closeDay(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dayModal.hidden) closeDay(); });
+      let dayISO = '';
+      const openDayList = (iso) => {
+        dayISO = iso;
+        const items = visible().filter((it) => iso >= it.date && iso <= (it.endDate || it.date));
+        dayModal.querySelector('[data-day-title]').textContent = `${iso.replaceAll('-', '.')} 일정 ${items.length}개`;
+        const box = dayModal.querySelector('[data-day-list]');
+        box.innerHTML = items.map(rowHTML).join('');
+        bindRows(box, closeDay);
+        dayModal.hidden = false;
+      };
+      dayModal.querySelector('[data-day-add]').addEventListener('click', () => { closeDay(); openModal(null, dayISO); });
 
-      const renderScheduleRow = (item) => `
-        <div class="admin-schedule-row" data-schedule-id="${item.id}">
-          <select data-field="category">
-            ${SCHEDULE_CATEGORY_OPTIONS.map((c) => `<option value="${c}" ${item.category === c ? 'selected' : ''}>${c}</option>`).join('')}
-          </select>
-          <input type="date" data-field="date" value="${item.date}" />
-          <input type="date" data-field="endDate" value="${item.endDate || ''}" title="종료일 (기간이 있는 일정만)" />
-          <input type="text" data-field="title" value="${item.title}" placeholder="일정 제목" />
-          <input type="text" data-field="memo" value="${item.memo || ''}" placeholder="메모 (선택)" />
-          <span class="admin-schedule-creator" title="등록자">${item.createdByName || '-'}</span>
-          <button type="button" class="secondary-btn" data-delete-schedule>삭제</button>
-        </div>
-      `;
-
-      const renderScheduleList = () => {
-        renderCalendar();
-        const schedule = scheduleData
-          .filter((item) => activeScheduleCat === 'all' || item.category === activeScheduleCat)
-          .slice()
-          .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-        scheduleListEl.innerHTML = schedule.length
-          ? schedule.map(renderScheduleRow).join('')
-          : '<p class="admin-hint">등록된 일정이 없습니다.</p>';
-
-        scheduleListEl.querySelectorAll('.admin-schedule-row').forEach((row) => {
-          const id = row.dataset.scheduleId;
-          row.querySelectorAll('input, select').forEach((input) => {
-            input.addEventListener('change', async () => {
-              const item = scheduleData.find((s) => s.id === id);
-              if (!item) return;
-              item[input.dataset.field] = input.value;
-              const error = await updateScheduleItem(item);
-              if (error) { window.alert('저장 중 오류가 발생했습니다: ' + error.message); return; }
-              renderCalendar();
-            });
-          });
-          row.querySelector('[data-delete-schedule]').addEventListener('click', async () => {
-            const error = await deleteScheduleItem(id);
-            if (error) { window.alert('삭제 중 오류가 발생했습니다: ' + error.message); return; }
-            const index = scheduleData.findIndex((s) => s.id === id);
-            if (index !== -1) scheduleData.splice(index, 1);
-            renderScheduleList();
-          });
-        });
+      const renderUpcoming = () => {
+        const today = todayISO();
+        const next = visible().filter((i) => (i.endDate || i.date) >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
+        upcomingEl.innerHTML = next.length ? next.map(rowHTML).join('') : '<p class="admin-hint">다가오는 일정이 없어요.</p>';
+        bindRows(upcomingEl);
       };
 
-      renderScheduleList();
+      const renderAllList = () => {
+        const all = visible().slice().sort((a, b) => a.date.localeCompare(b.date));
+        allBtn.textContent = `${listEl.hidden ? '전체 일정 보기' : '전체 일정 접기'} (${all.length}건)`;
+        allBtn.setAttribute('aria-expanded', String(!listEl.hidden));
+        if (listEl.hidden) return;
+        listEl.innerHTML = all.length ? all.map(rowHTML).join('') : '<p class="admin-hint">등록된 일정이 없어요.</p>';
+        bindRows(listEl);
+      };
 
-      scheduleFilterEl?.querySelectorAll('.admin-schedule-filter-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          scheduleFilterEl.querySelectorAll('.admin-schedule-filter-btn').forEach((item) => item.classList.toggle('active', item === btn));
-          activeScheduleCat = btn.dataset.cat;
-          renderScheduleList();
-        });
-      });
+      function renderAll() { renderCalendar(); renderUpcoming(); renderAllList(); }
 
-      addScheduleBtn?.addEventListener('click', () => {
-        openScheduleAddModal(new Date().toISOString().slice(0, 10));
-      });
+      // ---- 이벤트 ----
+      $('[data-add-schedule]')?.addEventListener('click', () => openModal(null, todayISO()));
+      $('[data-cal-prev]')?.addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() - 1); renderCalendar(); });
+      $('[data-cal-next]')?.addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() + 1); renderCalendar(); });
+      allBtn.addEventListener('click', () => { listEl.hidden = !listEl.hidden; renderAllList(); });
+      filterEl?.querySelectorAll('.admin-schedule-filter-btn').forEach((btn) => btn.addEventListener('click', () => {
+        filterEl.querySelectorAll('.admin-schedule-filter-btn').forEach((it) => it.classList.toggle('active', it === btn));
+        activeCat = btn.dataset.cat;
+        renderAll();
+      }));
+
+      renderAll();
     }
   }
 

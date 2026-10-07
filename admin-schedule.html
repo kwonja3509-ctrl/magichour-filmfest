@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>일정 관리 | 제 3회 연세예술원 졸업영화제</title>
-    <link rel="stylesheet" href="styles.css?v=21" />
+    <link rel="stylesheet" href="styles.css?v=25" />
   </head>
   <body>
     <header class="festival-topbar">
@@ -71,20 +71,7 @@
             <h2 style="margin: 0;">일정 관리</h2>
             <button type="button" class="primary-btn" data-add-schedule>+ 일정 추가</button>
           </div>
-          <p class="admin-hint">운영진 내부에서 공유할 준비 일정을 카테고리별로 관리합니다. 종료일은 기간이 있는 일정에만 입력하세요.</p>
-
-          <div class="admin-calendar">
-            <div class="admin-calendar-head">
-              <button type="button" class="secondary-btn" data-cal-prev>‹ 이전달</button>
-              <h3 data-cal-month>2026년 9월</h3>
-              <button type="button" class="secondary-btn" data-cal-next>다음달 ›</button>
-            </div>
-            <div class="admin-calendar-weekdays">
-              <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
-            </div>
-            <div class="admin-calendar-grid" data-admin-calendar></div>
-            <div class="admin-calendar-legend" data-calendar-legend></div>
-          </div>
+          <p class="schedule-msg" data-schedule-msg role="status" hidden></p>
 
           <div class="admin-schedule-filter" data-schedule-filter>
             <button type="button" class="admin-schedule-filter-btn active" data-cat="all">전체</button>
@@ -94,7 +81,25 @@
             <button type="button" class="admin-schedule-filter-btn" data-cat="굿즈">굿즈</button>
             <button type="button" class="admin-schedule-filter-btn" data-cat="후원">후원</button>
           </div>
-          <div class="admin-schedule-list" data-admin-schedule-list></div>
+
+          <div class="admin-calendar">
+            <div class="admin-calendar-head">
+              <button type="button" class="secondary-btn" data-cal-prev>‹</button>
+              <h3 data-cal-month>2026년 9월</h3>
+              <button type="button" class="secondary-btn" data-cal-next>›</button>
+            </div>
+            <div class="admin-calendar-weekdays">
+              <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+            </div>
+            <div class="admin-calendar-grid" data-admin-calendar></div>
+            <div class="admin-calendar-legend" data-calendar-legend></div>
+          </div>
+
+          <h3 class="schedule-sub">다가오는 일정</h3>
+          <div class="schedule-upcoming" data-upcoming></div>
+
+          <button type="button" class="schedule-all-toggle" data-toggle-all aria-expanded="false">전체 일정 보기</button>
+          <div class="admin-schedule-list schedule-all" data-admin-schedule-list hidden></div>
         </div>
       </div>
     </main>
@@ -141,6 +146,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase-client.js"></script>
-    <script src="script.js?v=6"></script>
+    <script src="script.js?v=10"></script>
   </body>
 </html>

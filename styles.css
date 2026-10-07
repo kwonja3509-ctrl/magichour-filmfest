@@ -5209,3 +5209,41 @@ a.sponsor-cta { display: inline-block; }
   .footer-bottom { text-align: center; }
   body:has(.confirm-btn) .site-footer { padding-bottom: 80px; }
 }
+
+/* ===== 관리자 일정 관리: 빠른 추가 · 접이식 전체 목록 ===== */
+.schedule-msg { margin: 0 0 12px; padding: 11px 14px; background: #eef2f8; color: var(--navy); font-weight: 700; font-size: 0.92rem; }
+.schedule-msg.is-error { background: #fbeceb; color: #a1473d; }
+.schedule-quick { display: grid; grid-template-columns: 130px 160px minmax(0, 1fr) 90px; gap: 8px; margin: 4px 0 16px; }
+.schedule-quick select, .schedule-quick input { padding: 12px; border: 1px solid #c9ced8; background: #fff; font-size: 0.95rem; min-width: 0; }
+.schedule-quick .primary-btn { padding: 12px; }
+.schedule-sub { margin: 28px 0 10px; font-size: 1.05rem; color: var(--navy); }
+.schedule-upcoming, .schedule-all { display: grid; gap: 0; border-top: 2px solid var(--navy); }
+.schedule-all[hidden] { display: none; }
+.sch-row { display: grid; grid-template-columns: 170px auto minmax(0, 1fr); gap: 4px 14px; align-items: center; text-align: left; padding: 14px 6px; border: 0; border-bottom: 1px solid var(--line); background: none; cursor: pointer; font-size: 0.95rem; color: var(--ink); }
+.sch-row:hover { background: rgba(16, 34, 69, 0.04); }
+.sch-date { color: var(--soft-ink); font-variant-numeric: tabular-nums; font-size: 0.88rem; }
+.sch-chip { justify-self: start; padding: 3px 9px; color: #fff; font-size: 0.75rem; font-weight: 700; border-radius: 2px; }
+.sch-title { font-weight: 700; color: var(--navy); }
+.sch-memo { grid-column: 3; color: var(--soft-ink); font-size: 0.85rem; }
+.schedule-all-toggle { width: 100%; margin-top: 22px; padding: 14px; border: 1px solid var(--navy); background: #fff; color: var(--navy); font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+.schedule-all-toggle:hover { background: var(--navy); color: #fff; }
+.admin-calendar-head { gap: 8px; }
+@media (max-width: 720px) {
+  .schedule-quick { grid-template-columns: 1fr 1fr; }
+  .schedule-quick input[type="text"] { grid-column: 1 / -1; }
+  .schedule-quick .primary-btn { grid-column: 1 / -1; }
+  .sch-row { grid-template-columns: auto minmax(0, 1fr); }
+  .sch-date { grid-column: 1 / -1; }
+  .sch-title { grid-column: 2; }
+  .sch-memo { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .admin-cal-event { font-size: 0; height: 6px; min-height: 6px; padding: 0; margin-top: 3px; border-radius: 3px; overflow: hidden; }
+  .admin-cal-more { font-size: 0.6rem; }
+}
+/* 하루 일정 목록 팝업 */ .schedule-day-list { display: grid; border-top: 2px solid var(--navy); margin-top: 8px; max-height: 50vh; overflow-y: auto; } .schedule-day-list .sch-row { grid-template-columns: auto minmax(0, 1fr); } .schedule-day-list .sch-date { display: none; } .admin-cal-more { cursor: pointer; text-decoration: underline; }
+
+/* 일정 끌어서 옮기기 */
+.admin-cal-event { cursor: grab; }
+.admin-cal-event.is-dragging { opacity: 0.4; }
+.admin-cal-day.drag-over { outline: 2px dashed var(--navy); outline-offset: -2px; background: rgba(16, 34, 69, 0.06); }
