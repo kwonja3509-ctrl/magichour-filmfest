@@ -5158,3 +5158,26 @@ a.sponsor-cta { display: inline-block; }
   .fest-eyebrow { margin-top: 8px; font-size: 0.82rem; }
   .fest-summary { margin-bottom: 36px; }
 }
+
+/* 수상작 팝업: 그리드 칸이 이미지 원본 폭만큼 넓어지지 않도록 (림시교원·ZERO가 크게 보이던 문제) */
+.award-modal-box > * { min-width: 0; }
+.award-modal-poster img { max-width: 100%; height: auto; }
+
+/* 모바일 푸터 표시 */
+@media (max-width: 640px) {
+  .site-footer { display: block; padding: 32px 0 20px; margin-top: 32px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 22px 16px; padding-bottom: 22px; }
+  .footer-brand-col { grid-column: 1 / -1; }
+  .footer-logo-img { height: 44px; }
+  .footer-slogan { font-size: 0.8rem; margin-top: 8px; }
+  .footer-col { gap: 10px; }
+  .footer-col a { font-size: 0.88rem; line-height: 1.4; }
+  .footer-col:empty { display: none; }
+  .footer-social { gap: 14px; margin-bottom: 16px; }
+  .footer-social a { width: 38px; height: 38px; }
+  .footer-social a svg { width: 18px; height: 18px; }
+  .footer-bottom { font-size: 0.76rem; }
+  body:has(.confirm-btn) .site-footer { padding-bottom: 88px; }
+}
+@media (max-width: 520px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+.award-modal-info .award-badge { max-width: 100%; white-space: normal; line-height: 1.5; }
