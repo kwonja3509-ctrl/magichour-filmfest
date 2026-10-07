@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=26" />
+    <link rel="stylesheet" href="styles.css?v=27" />
     <meta name="description" content="2026년 12월 4일(금) 16:00, 연세대 미래캠퍼스 RIS 대강당. 가장 빛나는, 다시 오지 않을 순간 — 제3회 연세예술원 영화학 졸업영화제 Magic Hour." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Magic Hour · 제3회 연세예술원 졸업영화제" />
@@ -78,13 +78,18 @@
           <button class="primary-btn" type="submit">아이디 찾기</button>
         </form>
 
-        <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(17,17,17,0.08);">
-          <form id="resetForm">
-            <div class="field">
-              <label for="reset-username">아이디</label>
-              <input id="reset-username" name="username" type="text" placeholder="아이디를 입력하세요" required />
-            </div>
-            <button class="secondary-btn" type="submit">재설정 링크 받기</button>
+        <div class="pw-reset-box">
+          <h2 class="pw-reset-title">비밀번호 재설정</h2>
+          <p class="auth-sub">가입할 때 입력한 정보가 모두 맞으면 새 비밀번호로 바로 바꿀 수 있어요. (기존 비밀번호는 확인할 수 없어요.)</p>
+          <form id="pwResetForm">
+            <div class="field"><label for="pr-email">이메일</label><input id="pr-email" type="email" autocomplete="email" placeholder="가입한 이메일" required /></div>
+            <div class="field"><label for="pr-username">아이디</label><input id="pr-username" type="text" autocomplete="username" placeholder="가입한 아이디" required /></div>
+            <div class="field"><label for="pr-phone">연락처</label><input id="pr-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" required /></div>
+            <div class="field"><label for="pr-pw">새 비밀번호</label><input id="pr-pw" type="password" minlength="6" autocomplete="new-password" placeholder="6자 이상" required /></div>
+            <div class="field"><label for="pr-pw2">새 비밀번호 확인</label><input id="pr-pw2" type="password" minlength="6" autocomplete="new-password" placeholder="한 번 더 입력" required /></div>
+            <p class="auth-error" data-pr-error role="alert" hidden></p>
+            <p class="auth-ok" data-pr-ok role="status" hidden></p>
+            <button class="primary-btn" type="submit">비밀번호 변경</button>
           </form>
         </div>
 
@@ -143,6 +148,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase-client.js"></script>
-    <script src="script.js?v=11"></script>
+    <script src="script.js?v=13"></script>
   </body>
 </html>

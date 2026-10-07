@@ -57,6 +57,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     overlay.querySelector('.ticket-pass-close').addEventListener('click', close);
     overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
   });
+
+  // 이메일 + 아이디 + 연락처가 모두 맞으면 새 비밀번호로 바로 변경 (supabase-schema-addon-6.sql 필요)
+  const resetPasswordWithIdentity = async ({ email, username, phone, pw, pw2 }) => {
+    if (pw.length < 6) return '비밀번호는 6자 이상이어야 해요.';
+    if (pw !== pw2) return '두 비밀번호가 서로 달라요.';
+    const { data, error } = await supabaseClient.rpc('reset_password_with_identity', {
+      p_email: email, p_username: username, p_phone: phone, p_new_password: pw,
+    });
+    if (error) return '처리하지 못했어요. 잠시 후 다시 시도해 주세요.';
+    if (data === 'OK') return null;
+    if (data === 'LOCKED') return '시도 횟수를 넘었어요. 15분 뒤에 다시 시도해 주세요.';
+    if (data === 'WEAK') return '비밀번호는 6자 이상이어야 해요.';
+    return '입력한 이메일·아이디·연락처가 가입 정보와 일치하지 않아요.';
+  };
   const bookingEmptyHTML = '<li class="ticket-empty"><p>아직 예매 내역이 없습니다.</p><a class="primary-btn" href="reserve.html">좌석 예매하기</a></li>';
 
   const loadCurrentUser = async () => {
@@ -161,11 +175,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         <button class="login-modal-submit" type="submit">아이디 찾기</button>
       </form>
       <form id="auth-form-find-password" class="auth-find-panel" hidden>
-        <label for="auth-reset-username">아이디</label>
-        <input type="text" id="auth-reset-username" placeholder="아이디를 입력하세요" required />
+        <label for="auth-pr-email">이메일</label>
+        <input type="email" id="auth-pr-email" placeholder="가입한 이메일" required />
+        <label for="auth-pr-username">아이디</label>
+        <input type="text" id="auth-pr-username" placeholder="가입한 아이디" required />
+        <label for="auth-pr-phone">연락처</label>
+        <input type="tel" id="auth-pr-phone" placeholder="010-0000-0000" required />
+        <label for="auth-pr-pw">새 비밀번호</label>
+        <input type="password" id="auth-pr-pw" minlength="6" placeholder="6자 이상" required />
+        <label for="auth-pr-pw2">새 비밀번호 확인</label>
+        <input type="password" id="auth-pr-pw2" minlength="6" placeholder="한 번 더 입력" required />
         <p class="login-modal-error" id="auth-error-password" hidden></p>
         <p class="login-modal-success" id="auth-success-password" hidden></p>
-        <button class="login-modal-submit" type="submit">재설정 링크 받기</button>
+        <button class="login-modal-submit" type="submit">비밀번호 변경</button>
       </form>
       <button class="login-modal-alt-btn" type="button" data-auth-nav="login">로그인으로 돌아가기</button>
     `
@@ -292,27 +314,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       panels.password.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const username = box.querySelector('#auth-reset-username').value.trim();
         const errorEl = box.querySelector('#auth-error-password');
         const successEl = box.querySelector('#auth-success-password');
         errorEl.hidden = true;
         successEl.hidden = true;
-
-        const { data: email } = await supabaseClient.rpc('get_email_by_username', { lookup_username: username });
-        if (!email) {
-          errorEl.textContent = '입력하신 아이디를 찾을 수 없습니다.';
-          errorEl.hidden = false;
-          return;
-        }
-
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', window.location.href).href });
-        if (error) {
-          errorEl.textContent = '재설정 메일 발송 중 오류가 발생했습니다.';
-          errorEl.hidden = false;
-          return;
-        }
-        successEl.textContent = '가입하신 이메일로 비밀번호 재설정 링크를 보내드렸습니다.';
+        const msg = await resetPasswordWithIdentity({
+          email: box.querySelector('#auth-pr-email').value.trim(),
+          username: box.querySelector('#auth-pr-username').value.trim(),
+          phone: box.querySelector('#auth-pr-phone').value.trim(),
+          pw: box.querySelector('#auth-pr-pw').value,
+          pw2: box.querySelector('#auth-pr-pw2').value,
+        });
+        if (msg) { errorEl.textContent = msg; errorEl.hidden = false; return; }
+        successEl.textContent = '비밀번호를 변경했어요. 새 비밀번호로 로그인해 주세요.';
         successEl.hidden = false;
+        panels.password.reset();
       });
     }
   };
@@ -548,26 +564,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  const resetForm = document.querySelector('#resetForm');
-  if (resetForm) {
-    resetForm.addEventListener('submit', async (e) => {
+  const pwResetForm = document.querySelector('#pwResetForm');
+  if (pwResetForm) {
+    const errEl = pwResetForm.querySelector('[data-pr-error]');
+    const okEl = pwResetForm.querySelector('[data-pr-ok]');
+    pwResetForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const form = new FormData(resetForm);
-      const username = String(form.get('username') || '').trim();
-      const { data: email } = await supabaseClient.rpc('get_email_by_username', { lookup_username: username });
-      if (!email) {
-        alert('입력하신 아이디를 찾을 수 없습니다.');
-        return;
-      }
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', window.location.href).href });
-      if (error) {
-        alert('재설정 메일 발송 중 오류가 발생했습니다.');
-        return;
-      }
-      alert('가입하신 이메일로 비밀번호 재설정 링크를 보내드렸습니다.');
+      errEl.hidden = true;
+      okEl.hidden = true;
+      const btn = pwResetForm.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      const msg = await resetPasswordWithIdentity({
+        email: document.getElementById('pr-email').value.trim(),
+        username: document.getElementById('pr-username').value.trim(),
+        phone: document.getElementById('pr-phone').value.trim(),
+        pw: document.getElementById('pr-pw').value,
+        pw2: document.getElementById('pr-pw2').value,
+      });
+      btn.disabled = false;
+      if (msg) { errEl.textContent = msg; errEl.hidden = false; return; }
+      okEl.textContent = '비밀번호를 변경했어요. 새 비밀번호로 로그인해 주세요.';
+      okEl.hidden = false;
+      pwResetForm.reset();
     });
   }
-
 
   // 비밀번호 재설정 페이지: 메일의 링크로 들어오면 임시 세션이 생기고, 그 상태에서 새 비밀번호를 저장
   if (window.location.pathname.endsWith('reset-password.html')) {
@@ -582,14 +602,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       formEl.hidden = false;
       document.getElementById('new-password').focus();
     };
-    supabaseClient.auth.onAuthStateChange((event) => { if (event === 'PASSWORD_RECOVERY') showForm(); });
-    // 링크 해석이 끝난 뒤에도 재설정 세션이 없으면 만료/잘못된 링크
-    setTimeout(async () => {
-      if (ready) return;
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session && /type=recovery/.test(window.location.hash + window.location.search)) { showForm(); return; }
-      statusEl.textContent = '유효하지 않거나 만료된 링크예요. 비밀번호 재설정 링크를 다시 받아 주세요.';
-    }, 2500);
+    const expiredMsg = '유효하지 않거나 만료된 링크예요. 비밀번호 재설정 링크를 다시 받아 주세요.';
+    const params = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const tokenHash = params.get('token_hash');
+
+    if (hashParams.get('error') || hashParams.get('error_code')) {
+      // 메일 링크가 이미 사용됐거나 만료됨 (메일 보안 검사가 먼저 열어 본 경우 포함)
+      statusEl.textContent = expiredMsg;
+    } else if (tokenHash) {
+      // 메일 링크: ?token_hash=...  → 버튼을 눌러야 확인하므로 메일 자동 검사에 링크가 소모되지 않음
+      statusEl.textContent = '아래 버튼을 눌러 비밀번호 재설정을 시작해 주세요.';
+      const startBtn = document.createElement('button');
+      startBtn.type = 'button';
+      startBtn.className = 'primary-btn';
+      startBtn.style.width = '100%';
+      startBtn.textContent = '비밀번호 재설정 시작';
+      statusEl.after(startBtn);
+      startBtn.addEventListener('click', async () => {
+        startBtn.disabled = true;
+        const { error } = await supabaseClient.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+        if (error) { startBtn.remove(); statusEl.textContent = expiredMsg; return; }
+        startBtn.remove();
+        showForm();
+      });
+    } else {
+      supabaseClient.auth.onAuthStateChange((event) => { if (event === 'PASSWORD_RECOVERY') showForm(); });
+      // 링크 해석이 끝난 뒤에도 재설정 세션이 없으면 만료/잘못된 링크
+      setTimeout(async () => {
+        if (ready) return;
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && /type=recovery/.test(window.location.hash + window.location.search)) { showForm(); return; }
+        statusEl.textContent = expiredMsg;
+      }, 2500);
+    }
 
     formEl.addEventListener('submit', async (e) => {
       e.preventDefault();
