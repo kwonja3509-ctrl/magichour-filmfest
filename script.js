@@ -3,6 +3,62 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const isAdminUser = (user) => !!user && user.role === 'admin';
 
+  // 예매 내역 카드 (마이페이지 + 헤더 모달 공용)
+  const bookingCardHTML = (booking, cancelAttr) => {
+    const seats = booking.seats || [];
+    const booked = new Date(booking.created_at);
+    const bookedLabel = `${booked.getFullYear()}.${String(booked.getMonth() + 1).padStart(2, '0')}.${String(booked.getDate()).padStart(2, '0')}`;
+    return `
+      <li class="ticket-item">
+        <div class="ticket-item-main">
+          <p class="ticket-item-title">제 3회 연세예술원 졸업영화제 · 매직아워</p>
+          <dl class="ticket-item-info">
+            <div><dt>상영 일시</dt><dd>2026.12.04 (금) 16:00</dd></div>
+            <div><dt>장소</dt><dd>미래캠퍼스 RIS 대강당</dd></div>
+            <div><dt>인원</dt><dd>${seats.length}명</dd></div>
+            <div><dt>예매일</dt><dd>${bookedLabel}</dd></div>
+          </dl>
+          <div class="ticket-item-seats">${seats.map((c) => `<span class="seat-chip">${c}</span>`).join('')}</div>
+        </div>
+        <div class="ticket-item-actions">
+          <button class="ticket-view-btn" type="button" data-ticket-view data-code="MH-${String(booking.id).padStart(4, '0')}" data-seats="${seats.join(',')}">입장 확인 화면</button>
+          <button class="ticket-item-cancel" type="button" ${cancelAttr}="${booking.id}">예매 취소</button>
+        </div>
+      </li>`;
+  };
+  // 현장 데스크용 입장 확인 화면: 이름·좌석·예매번호 + 실시간 시계(캡처본 구분용)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-ticket-view]');
+    if (!btn) return;
+    const seats = btn.dataset.seats.split(',').filter(Boolean);
+    const overlay = document.createElement('div');
+    overlay.className = 'ticket-pass-overlay';
+    overlay.innerHTML = `
+      <div class="ticket-pass" role="dialog" aria-modal="true">
+        <p class="ticket-pass-eyebrow">제 3회 연세예술원 졸업영화제 · 매직아워</p>
+        <p class="ticket-pass-name">${(window.__mhUserName || '')}</p>
+        <div class="ticket-pass-seats">${seats.map((c) => `<span>${c}</span>`).join('')}</div>
+        <dl class="ticket-pass-info">
+          <div><dt>예매번호</dt><dd>${btn.dataset.code}</dd></div>
+          <div><dt>인원</dt><dd>${seats.length}명</dd></div>
+          <div><dt>일시</dt><dd>2026.12.04 (금) 16:00</dd></div>
+          <div><dt>장소</dt><dd>RIS 대강당</dd></div>
+        </dl>
+        <p class="ticket-pass-clock" data-pass-clock></p>
+        <p class="ticket-pass-note">이 화면을 입장 데스크에서 보여 주시면 티켓을 드립니다.</p>
+        <button type="button" class="ticket-pass-close">닫기</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    const clock = overlay.querySelector('[data-pass-clock]');
+    const tick = () => { clock.textContent = new Date().toLocaleString('ko-KR', { hour12: false }); };
+    tick();
+    const timer = setInterval(tick, 1000);
+    const close = () => { clearInterval(timer); overlay.remove(); };
+    overlay.querySelector('.ticket-pass-close').addEventListener('click', close);
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
+  });
+  const bookingEmptyHTML = '<li class="ticket-empty"><p>아직 예매 내역이 없습니다.</p><a class="primary-btn" href="reserve.html">좌석 예매하기</a></li>';
+
   const loadCurrentUser = async () => {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return null;
@@ -16,6 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const currentUser = await loadCurrentUser();
+  window.__mhUserName = currentUser ? (currentUser.name || currentUser.username || '') : '';
 
   const signOutAndRedirect = async (target) => {
     await supabaseClient.auth.signOut();
@@ -328,19 +385,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         .order('created_at', { ascending: false });
 
       if (error || !userBookings || !userBookings.length) {
-        bookingList.innerHTML = '<li>아직 예매 내역이 없습니다.</li>';
+        bookingList.innerHTML = bookingEmptyHTML;
         return;
       }
 
-      bookingList.innerHTML = userBookings.map((booking) => `
-        <li>
-          <div>
-            <strong>${new Date(booking.created_at).toLocaleDateString()}</strong><br>
-            ${(booking.seats || []).join(', ')}
-          </div>
-          <button class="secondary-btn" type="button" data-mypage-cancel="${booking.id}">취소</button>
-        </li>
-      `).join('');
+      bookingList.innerHTML = userBookings.map((b) => bookingCardHTML(b, 'data-mypage-cancel')).join('');
 
       bookingList.querySelectorAll('[data-mypage-cancel]').forEach((btn) => {
         btn.addEventListener('click', async () => {
@@ -561,7 +610,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCarousel();
   };
 
-  const SEAT_ROW_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+  const SEAT_ROW_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
+  // 좌석표_A-M열.xlsx 기준: 앞뒤 줄은 양 끝 좌석이 없음
+  const SEAT_ROW_RANGES = { A: [3, 22], B: [2, 23], L: [2, 23], M: [3, 22] };
 
   const buildSeatMap = (container, { getState, onClick }) => {
     const sections = [
@@ -602,7 +653,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           aisle.className = 'seat-aisle';
           row.appendChild(aisle);
         }
+        const [minSeat, maxSeat] = SEAT_ROW_RANGES[rowLabel] || [1, 24];
         for (let i = 1; i <= count; i += 1) {
+          if (base + i < minSeat || base + i > maxSeat) {
+            const empty = document.createElement('span');
+            empty.className = 'seat';
+            empty.style.visibility = 'hidden';
+            row.appendChild(empty);
+            continue;
+          }
           const seatCode = `${rowLabel}${base + i}`;
           const seat = document.createElement('button');
           seat.type = 'button';
@@ -1332,7 +1391,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = notices.find((n) => n.id === row.dataset.notice);
         if (!data) return;
         detailTitle.textContent = data.title;
-        detailDate.textContent = data.date;
+        detailDate.textContent = data.date + " · 작성자 집행위원장 김창기";
         detailBody.innerHTML = data.body.map((line) => `<p>${line}</p>`).join('');
         listView.hidden = true;
         detailView.hidden = false;
@@ -1596,20 +1655,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         .order('created_at', { ascending: false });
 
       if (!userBookings || !userBookings.length) {
-        bookingList.innerHTML = '<li>아직 예매 내역이 없습니다.</li>';
+        bookingList.innerHTML = bookingEmptyHTML;
       } else {
-        bookingList.innerHTML = userBookings.map((booking) => `
-          <li>
-            <div>
-              <strong>${new Date(booking.created_at).toLocaleDateString()}</strong><br>
-              ${(booking.seats || []).join(', ')}
-            </div>
-            <button class="secondary-btn" type="button" data-cancel-booking="${booking.id}">취소</button>
-          </li>
-        `).join('');
+        bookingList.innerHTML = userBookings.map((b) => bookingCardHTML(b, 'data-cancel-booking')).join('');
 
         bookingList.querySelectorAll('[data-cancel-booking]').forEach((btn) => {
           btn.addEventListener('click', async () => {
+            if (!window.confirm('예매를 취소하시겠어요?')) return;
             const bookingId = btn.getAttribute('data-cancel-booking');
             await supabaseClient.from('bookings').delete().eq('id', bookingId);
             window.location.reload();
@@ -1623,7 +1675,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  const ADMIN_PAGES = ['admin.html', 'admin-films.html', 'admin-members.html', 'admin-notices.html', 'admin-schedule.html', 'admin-sponsors.html', 'admin-settlement.html'];
+  const ADMIN_PAGES = ['admin.html', 'admin-vip.html', 'admin-films.html', 'admin-members.html', 'admin-notices.html', 'admin-schedule.html', 'admin-sponsors.html', 'admin-settlement.html'];
   const currentAdminPage = ADMIN_PAGES.find((page) => window.location.pathname.endsWith(page));
 
   if (currentAdminPage) {
@@ -1650,28 +1702,80 @@ document.addEventListener('DOMContentLoaded', async () => {
     logoutBtn?.addEventListener('click', () => signOutAndRedirect('index.html'));
   }
 
-  if (currentAdminPage === 'admin.html') {
+  if (currentAdminPage === 'admin.html' || currentAdminPage === 'admin-vip.html') {
     const adminList = document.querySelector('[data-admin-bookings]');
     if (adminList) {
-      const { data: bookings } = await supabaseClient
+      const searchEl = document.querySelector('[data-booking-search]');
+      const statsEl = document.querySelector('[data-booking-stats]');
+      const esc = (v) => String(v ?? '-').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const codeOf = (b) => `MH-${String(b.id).padStart(4, '0')}`;
+      const timeOf = (iso) => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+      const { data: loaded } = await supabaseClient
         .from('bookings')
         .select('*')
         .order('created_at', { ascending: false });
+      const allBookings = loaded || [];
 
-      adminList.innerHTML = bookings && bookings.length
-        ? `<li class="admin-booking-row admin-booking-head">
-             <span>이름</span><span>연락처</span><span>이메일</span><span>좌석</span><span>예매일시</span>
-           </li>` +
-          bookings.map((booking) => `
-            <li class="admin-booking-row">
-              <span>${booking.name || '-'}</span>
-              <span>${booking.phone || '-'}</span>
-              <span>${booking.email || '-'}</span>
-              <span>${(booking.seats || []).join(', ')}</span>
-              <span>${new Date(booking.created_at).toLocaleString()}</span>
-            </li>
-          `).join('')
-        : '<li>예매 내역이 없습니다.</li>';
+      const renderBookings = () => {
+        const q = (searchEl?.value || '').trim().toLowerCase();
+        const rows = allBookings.filter((b) => !q || [codeOf(b), b.name, b.phone, (b.seats || []).join(' ')]
+          .join(' ').toLowerCase().includes(q));
+        const people = allBookings.reduce((n, b) => n + (b.seats || []).length, 0);
+        const inPeople = allBookings.filter((b) => b.checked_in_at).reduce((n, b) => n + (b.seats || []).length, 0);
+        if (statsEl) statsEl.textContent = `예매 ${allBookings.length}건 · ${people}명  |  입장 완료 ${inPeople}명  |  대기 ${people - inPeople}명`;
+
+        adminList.innerHTML = rows.length
+          ? `<li class="admin-booking-row admin-checkin-row admin-booking-head">
+               <span>예매번호</span><span>이름</span><span>연락처</span><span>좌석</span><span>예매일시</span><span>입장</span>
+             </li>` + rows.map((b) => `
+            <li class="admin-booking-row admin-checkin-row${b.checked_in_at ? ' is-in' : ''}">
+              <span>${codeOf(b)}</span>
+              <span><strong>${esc(b.name)}</strong></span>
+              <span>${esc(b.phone)}</span>
+              <span>${esc((b.seats || []).join(', '))}</span>
+              <span>${new Date(b.created_at).toLocaleDateString('ko-KR')}</span>
+              <span>${b.checked_in_at
+                ? `<button type="button" class="checkin-btn done" data-checkin="${b.id}" data-undo="1">입장 완료 ${timeOf(b.checked_in_at)}</button>`
+                : `<button type="button" class="checkin-btn" data-checkin="${b.id}">입장 확인</button>`}</span>
+            </li>`).join('')
+          : `<li>${q ? '검색 결과가 없습니다.' : '예매 내역이 없습니다.'}</li>`;
+      };
+
+      const msgEl = document.querySelector('[data-checkin-msg]');
+      const showMsg = (text, isError) => {
+        if (!msgEl) return;
+        msgEl.textContent = text;
+        msgEl.hidden = !text;
+        msgEl.classList.toggle('is-error', !!isError);
+      };
+      adminList.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-checkin]');
+        if (!btn) return;
+        const booking = allBookings.find((b) => String(b.id) === btn.dataset.checkin);
+        if (!booking) return;
+        // 입장 완료 취소는 실수 방지를 위해 두 번 눌러야 함 (팝업 대신 버튼 문구로 안내)
+        if (btn.dataset.undo && !btn.dataset.armed) {
+          btn.dataset.armed = '1';
+          btn.textContent = '한 번 더 누르면 취소';
+          setTimeout(() => { if (btn.isConnected) { delete btn.dataset.armed; renderBookings(); } }, 3000);
+          return;
+        }
+        const value = btn.dataset.undo ? null : new Date().toISOString();
+        btn.disabled = true;
+        showMsg('저장 중…', false);
+        const { data: updated, error } = await supabaseClient.from('bookings').update({ checked_in_at: value }).eq('id', booking.id).select('id');
+        if (error || !updated || !updated.length) {
+          btn.disabled = false;
+          showMsg('입장 체크를 저장하지 못했어요. Supabase에서 supabase-schema-addon-5.sql 을 실행했는지, 관리자 계정으로 로그인했는지 확인해 주세요.' + (error ? ` (${error.message})` : ' (권한 없음: 0행 수정됨)'), true);
+          return;
+        }
+        booking.checked_in_at = value;
+        showMsg(`${booking.name || ''} 님 ${value ? '입장 완료' : '입장 취소'} 처리했어요.`, false);
+        renderBookings();
+      });
+      searchEl?.addEventListener('input', renderBookings);
+      renderBookings();
     }
 
     const adminSeatSections = document.querySelector('[data-admin-seat-sections]');
@@ -2615,8 +2719,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const totalPrice = document.querySelector('#totalPrice');
     const confirmBtn = document.querySelector('#confirmBooking');
     const selectedSeats = new Set();
+    const MAX_PEOPLE = 6;
+    let people = 1;
+    const countEl = document.querySelector('#peopleCount');
+    const hintEl = document.querySelector('#seatHint');
+    const chipsEl = document.querySelector('#seatChips');
+    const progressEl = document.querySelector('#seatProgress');
 
+    // 다른 사람의 예매는 RLS 때문에 직접 읽을 수 없으므로, 좌석 코드만 돌려주는 RPC를 사용
+    // (supabase-schema-addon-4.sql 적용 전에는 예전 방식으로 대체)
     const getTakenSeats = async () => {
+      const { data: rpcSeats, error: rpcError } = await supabaseClient.rpc('get_taken_seats');
+      if (!rpcError && Array.isArray(rpcSeats)) return new Set(rpcSeats);
       const [{ data: bookings }, { data: vipRows }] = await Promise.all([
         supabaseClient.from('bookings').select('seats'),
         supabaseClient.from('vip_seats').select('seat_code'),
@@ -2628,11 +2742,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateSummary() {
       const seatList = [...selectedSeats].sort();
-      bookingList.innerHTML = seatList.length
-        ? seatList.map((seat) => `<li>• ${seat}</li>`).join('')
-        : '<li>선택된 좌석이 없습니다.</li>';
+      const remain = people - seatList.length;
+      countEl.textContent = people;
+      document.querySelector('#peopleMinus').disabled = people <= 1;
+      document.querySelector('#peoplePlus').disabled = people >= MAX_PEOPLE;
+      progressEl.textContent = `${seatList.length} / ${people}석 선택`;
+      chipsEl.innerHTML = seatList.length
+        ? seatList.map((seat) => `<span class="seat-chip">${seat}</span>`).join('')
+        : '<span class="seat-chip-empty">좌석을 선택해 주세요</span>';
+      hintEl.textContent = remain > 0 ? `${remain}석을 더 선택해 주세요.` : '좌석 선택이 끝났어요. 예매를 확정해 주세요.';
       totalPrice.textContent = '무료';
+      confirmBtn.disabled = remain !== 0;
     }
+
+    const setPeople = (n) => {
+      people = Math.min(MAX_PEOPLE, Math.max(1, n));
+      const extra = [...selectedSeats].sort().slice(people);
+      extra.forEach((code) => {
+        selectedSeats.delete(code);
+        const el = document.querySelector(`.seat[data-code="${code}"]`);
+        if (el) { el.classList.remove('selected'); el.textContent = code.match(/\d+$/)[0]; }
+      });
+      updateSummary();
+    };
+    document.querySelector('#peopleMinus').addEventListener('click', () => setPeople(people - 1));
+    document.querySelector('#peoplePlus').addEventListener('click', () => setPeople(people + 1));
+    document.querySelector('#seatReset').addEventListener('click', () => {
+      [...selectedSeats].forEach((code) => {
+        selectedSeats.delete(code);
+        const el = document.querySelector(`.seat[data-code="${code}"]`);
+        if (el) { el.classList.remove('selected'); el.textContent = code.match(/\d+$/)[0]; }
+      });
+      updateSummary();
+    });
+    const nameEl = document.querySelector('[data-summary-name]');
+    if (nameEl) nameEl.textContent = user.name || user.username;
 
     const SCREENING_DATETIME_LABEL = '2026년 12월 04일 (금) 16:00';
 
@@ -2668,7 +2812,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       overlay.hidden = false;
     };
 
-    const takenSeats = await getTakenSeats();
+    let takenSeats = await getTakenSeats();
     buildSeatMap(seatSections, {
       getState: (code) => (takenSeats.has(code) ? 'taken' : (selectedSeats.has(code) ? 'selected' : 'available')),
       onClick: (code, seat, applyState) => {
@@ -2676,6 +2820,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (selectedSeats.has(code)) {
           selectedSeats.delete(code);
         } else {
+          if (selectedSeats.size >= people) {
+            hintEl.textContent = `선택한 인원(${people}명)만큼 좌석을 골랐어요. 인원을 늘리거나 다른 좌석을 해제해 주세요.`;
+            return;
+          }
           selectedSeats.add(code);
         }
         applyState(seat, selectedSeats.has(code) ? 'selected' : 'available');
@@ -2699,6 +2847,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       if (error) {
+        if ((error.message || '').includes('SEAT_TAKEN')) {
+          // 그 사이 다른 분이 먼저 예매한 좌석 → 최신 상태로 갱신
+          takenSeats = await getTakenSeats();
+          seatList.forEach((code) => {
+            if (!takenSeats.has(code)) return;
+            selectedSeats.delete(code);
+            const el = document.querySelector(`.seat[data-code="${code}"]`);
+            if (el) { el.classList.remove('selected'); el.classList.add('unavailable'); el.disabled = true; el.textContent = '■'; }
+          });
+          updateSummary();
+          alert('방금 다른 분이 먼저 예매한 좌석이 있어요. 좌석을 다시 선택해 주세요.');
+          return;
+        }
         alert(`예매 중 오류가 발생했습니다: ${error.message}`);
         return;
       }
@@ -2722,3 +2883,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateSummary();
   }
 });
+
+// Magic Hour v4: D-day + 스크롤 리빌
+(() => {
+  const dd = document.querySelector('[data-dday]');
+  if (dd) {
+    const days = Math.ceil((new Date('2026-12-04T16:00:00+09:00') - new Date()) / 864e5);
+    dd.textContent = days > 0 ? `D-${days}` : days === 0 ? 'D-DAY' : '상영 종료';
+  }
+  const els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) return els.forEach((e) => e.classList.add('in'));
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 });
+  els.forEach((e) => io.observe(e));
+})();

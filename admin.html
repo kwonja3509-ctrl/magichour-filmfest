@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>관리자 페이지 | 제 3회 연세예술원 졸업영화제</title>
-    <link rel="stylesheet" href="styles.css?v=3" />
+    <link rel="stylesheet" href="styles.css?v=17" />
   </head>
   <body>
     <header class="festival-topbar">
@@ -16,11 +16,35 @@
         </div>
 
         <nav class="top-menu" aria-label="상단 메인 메뉴">
-          <div class="menu-item"><a href="about-festival.html">영화제 소개</a></div>
-          <div class="menu-item"><a href="programs-4th.html">프로그램</a></div>
+          <div class="menu-item"><a href="about-festival.html">영화제 소개</a>
+            <ul class="submenu">
+              <li><a href="about-yeonsei.html">연세예술원 소개</a></li>
+              <li><a href="about-festival.html">영화제 소개</a></li>
+              <li><a href="about-awards.html">수상작</a></li>
+            </ul>
+          </div>
+          <!-- 프로그램·상영시간표 공개 전까지 숨김
+          <div class="menu-item"><a href="programs-4th.html">프로그램</a>
+            <ul class="submenu">
+              <li><a href="programs-4th.html">4기 단편영화</a></li>
+              <li><a href="programs-gradschool.html">정경대학원 영화</a></li>
+              <li><a href="programs-3rd.html">3기 졸업영화</a></li>
+            </ul>
+          </div> -->
           <div class="menu-item"><a href="tickets.html">예매</a></div>
-          <div class="menu-item"><a href="community-cheer.html">커뮤니티</a></div>
-          <div class="menu-item"><a href="sponsor.html">후원</a></div>
+          <div class="menu-item"><a href="community-cheer.html">커뮤니티</a>
+            <ul class="submenu">
+              <li><a href="community-cheer.html">응원하기</a></li>
+              <li><a href="community-guide.html">관객 가이드</a></li>
+              <li><a href="community-notice.html">공지사항</a></li>
+              <li><a href="community-faq.html">F&amp;A</a></li>
+            </ul>
+          </div>
+          <div class="menu-item"><a href="sponsor.html">후원</a>
+            <ul class="submenu">
+              <li><a href="sponsor.html">후원 소개</a></li>
+            </ul>
+          </div>
         </nav>
 
         <div class="top-actions">
@@ -32,7 +56,8 @@
     <main class="page-shell">
       <div class="container">
         <div class="program-subnav admin-subnav" aria-label="관리자 메뉴">
-          <button class="program-tab active" type="button" onclick="window.location.href='admin.html'">예매현황·VIP</button>
+          <button class="program-tab active" type="button" onclick="window.location.href='admin.html'">입장 체크</button>
+          <button class="program-tab" type="button" onclick="window.location.href='admin-vip.html'">VIP 좌석</button>
           <button class="program-tab" type="button" data-admin-tab="films" onclick="window.location.href='admin-films.html'">영화 정보</button>
           <button class="program-tab" type="button" data-admin-tab="members" onclick="window.location.href='admin-members.html'">회원 관리</button>
           <button class="program-tab" type="button" data-admin-tab="notices" onclick="window.location.href='admin-notices.html'">공지사항</button>
@@ -42,34 +67,15 @@
         </div>
 
         <div class="admin-panel">
-          <h2>예매 현황</h2>
+          <h2>예매 현황 · 입장 체크</h2>
+          <p class="checkin-msg" data-checkin-msg role="status" hidden></p>
+          <div class="checkin-bar">
+            <input type="search" class="checkin-search" data-booking-search placeholder="이름 · 연락처 · 좌석 · 번호 검색" aria-label="예매 검색" />
+            <p class="checkin-stats" data-booking-stats></p>
+          </div>
           <ul class="admin-list" data-admin-bookings>
             <li>예매 내역을 불러오는 중입니다.</li>
           </ul>
-        </div>
-
-        <div class="admin-panel">
-          <h2>VIP 좌석 관리</h2>
-          <p class="admin-hint">VIP 손님을 위해 미리 확보할 좌석을 선택하세요. 회색(예매 완료) 좌석은 선택할 수 없고, 선택한 좌석은 일반 예매 화면에서 매진으로 표시됩니다.</p>
-          <div class="seat-layout">
-            <div>
-              <div class="screen">SCREEN</div>
-              <div class="seat-wrap" data-admin-seat-sections></div>
-              <div class="legend">
-                <div class="legend-item"><span class="legend-dot" style="background:#dfe3e8"></span> 선택 가능</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#9098a5"></span> 예매 완료</div>
-                <div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#e6a12d,#d28b17)"></span> VIP 확보</div>
-              </div>
-            </div>
-            <div class="booking-summary">
-              <h3>VIP 확보 좌석</h3>
-              <ul class="booking-list" data-admin-vip-list></ul>
-              <div style="margin-top: 18px; display:flex; align-items:center; gap:12px;">
-                <button class="primary-btn" type="button" data-save-vip-seats>저장</button>
-                <span class="admin-save-status" data-vip-save-status>저장되었습니다</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </main>
@@ -77,7 +83,7 @@
     <footer class="site-footer">
       <div class="container footer-top">
         <div class="footer-brand-col">
-          <div class="footer-logo"><img src="logo.png" alt="Magic Hour 로고" class="footer-logo-img" />MAGIC HOUR</div>
+          <div class="footer-logo"><img src="logo-hero.png" alt="Magic Hour" class="footer-logo-img" /></div>
           <div class="footer-slogan">제 3회 연세예술원 졸업영화제</div>
         </div>
         <div class="footer-col">
@@ -86,9 +92,10 @@
           <a href="about-awards.html">수상작</a>
         </div>
         <div class="footer-col">
-          <a href="programs-4th.html">4기 단편영화</a>
+          <a href="https://ycms.yonsei.ac.kr/ysart/index.do" target="_blank" rel="noopener">연세예술원 공식 홈페이지</a>
+          <!-- <a href="programs-4th.html">4기 단편영화</a>
           <a href="programs-gradschool.html">정경대학원 영화</a>
-          <a href="programs-3rd.html">3기 졸업영화</a>
+          <a href="programs-3rd.html">3기 졸업영화</a> -->
         </div>
         <div class="footer-col">
           <a href="tickets-guide.html">예매 안내</a>
@@ -105,10 +112,9 @@
       <div class="footer-divider"></div>
 
       <div class="footer-social">
-        <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-        <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
-        <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4" ry="4"></rect><polygon points="10 9 16 12 10 15" fill="currentColor" stroke="none"></polygon></svg></a>
-        <a href="mailto:suwonfestival@gmail.com" aria-label="이메일 문의"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+        <a href="https://www.instagram.com/ysarts_official?utm_source=ig_web_button_share_sheet&amp;stkn=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        <a href="https://www.youtube.com/watch?v=YR9Jj92XFOc" target="_blank" rel="noopener" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4" ry="4"></rect><polygon points="10 9 16 12 10 15" fill="currentColor" stroke="none"></polygon></svg></a>
+        <a href="mailto:sinmj6577@naver.com" aria-label="이메일 문의"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg></a>
       </div>
 
       <div class="container footer-bottom">© 2026 Magic Hour. All rights reserved.</div>
@@ -116,6 +122,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase-client.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=6"></script>
   </body>
 </html>
