@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (data === 'WEAK') return '비밀번호는 6자 이상이어야 해요.';
     return '입력한 이메일·아이디·연락처가 가입 정보와 일치하지 않아요.';
   };
+
   const bookingEmptyHTML = '<li class="ticket-empty"><p>아직 예매 내역이 없습니다.</p><a class="primary-btn" href="reserve.html">좌석 예매하기</a></li>';
 
   const loadCurrentUser = async () => {
