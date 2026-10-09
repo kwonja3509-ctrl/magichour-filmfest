@@ -5251,3 +5251,13 @@ a.sponsor-cta { display: inline-block; }
 .pw-reset-box { margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--line); }
 .pw-reset-title { margin: 0 0 6px; font-size: 1.15rem; color: var(--navy); }
 .auth-ok { margin: 4px 0 12px; padding: 10px 12px; background: #e9f3ee; color: #226b4a; font-size: 0.9rem; font-weight: 700; }
+
+/* 일정 관리 모바일: 달력은 요약만, 내용은 아래 '이번 달 일정' 목록에서 읽기 */
+.schedule-month-title, .schedule-month { display: none; }
+@media (max-width: 640px) {
+  .schedule-month-title { display: block; }
+  .schedule-month { display: grid; }
+  .schedule-upcoming-title, .schedule-upcoming-list { display: none; }
+  .admin-calendar { padding: 10px 6px; }
+  .admin-cal-day { min-height: 56px; }
+}

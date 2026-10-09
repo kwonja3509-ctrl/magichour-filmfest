@@ -2480,7 +2480,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>`;
         }
         calGridEl.innerHTML = html;
-        calGridEl.querySelectorAll('.admin-cal-day:not(.is-empty)').forEach((el) => el.addEventListener('click', () => openModal(null, el.dataset.date)));
+        calGridEl.querySelectorAll('.admin-cal-day:not(.is-empty)').forEach((el) => el.addEventListener('click', () => (window.matchMedia('(max-width: 640px)').matches ? openDayList(el.dataset.date) : openModal(null, el.dataset.date))));
         // 일정을 끌어서 다른 날짜로 옮기기 (잡은 날짜가 놓은 날짜로 가도록 기간 전체를 이동)
         calGridEl.querySelectorAll('.admin-cal-event').forEach((el) => {
           el.addEventListener('dragstart', (e) => {
@@ -2562,7 +2562,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const items = visible().filter((it) => iso >= it.date && iso <= (it.endDate || it.date));
         dayModal.querySelector('[data-day-title]').textContent = `${iso.replaceAll('-', '.')} 일정 ${items.length}개`;
         const box = dayModal.querySelector('[data-day-list]');
-        box.innerHTML = items.map(rowHTML).join('');
+        box.innerHTML = items.length ? items.map(rowHTML).join('') : '<p class="admin-hint" style="padding: 14px 4px;">이 날은 일정이 없어요.</p>';
         bindRows(box, closeDay);
         dayModal.hidden = false;
       };
@@ -2584,12 +2584,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         bindRows(listEl);
       };
 
-      function renderAll() { renderCalendar(); renderUpcoming(); renderAllList(); }
+      const monthListEl = $('[data-month-list]');
+      const monthTitleEl = $('[data-month-title]');
+      const renderMonthList = () => {
+        if (!monthListEl) return;
+        const y = viewDate.getFullYear();
+        const mo = viewDate.getMonth();
+        const first = toISO(y, mo, 1);
+        const last = toISO(y, mo, new Date(y, mo + 1, 0).getDate());
+        const items = visible().filter((it) => it.date <= last && (it.endDate || it.date) >= first).sort((a, b) => a.date.localeCompare(b.date));
+        monthTitleEl.textContent = `${mo + 1}월 일정 (${items.length}건)`;
+        monthListEl.innerHTML = items.length ? items.map(rowHTML).join('') : '<p class="admin-hint">이번 달 일정이 없어요.</p>';
+        bindRows(monthListEl);
+      };
+
+      function renderAll() { renderCalendar(); renderMonthList(); renderUpcoming(); renderAllList(); }
 
       // ---- 이벤트 ----
       $('[data-add-schedule]')?.addEventListener('click', () => openModal(null, todayISO()));
-      $('[data-cal-prev]')?.addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() - 1); renderCalendar(); });
-      $('[data-cal-next]')?.addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() + 1); renderCalendar(); });
+      $('[data-cal-prev]')?.addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() - 1); renderCalendar(); renderMonthList(); });
+      $('[data-cal-next]')?.addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() + 1); renderCalendar(); renderMonthList(); });
       allBtn.addEventListener('click', () => { listEl.hidden = !listEl.hidden; renderAllList(); });
       filterEl?.querySelectorAll('.admin-schedule-filter-btn').forEach((btn) => btn.addEventListener('click', () => {
         filterEl.querySelectorAll('.admin-schedule-filter-btn').forEach((it) => it.classList.toggle('active', it === btn));

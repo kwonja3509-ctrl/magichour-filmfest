@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>일정 관리 | 제 3회 연세예술원 졸업영화제</title>
-    <link rel="stylesheet" href="styles.css?v=29" />
+    <link rel="stylesheet" href="styles.css?v=30" />
   </head>
   <body>
     <header class="festival-topbar">
@@ -95,8 +95,11 @@
             <div class="admin-calendar-legend" data-calendar-legend></div>
           </div>
 
-          <h3 class="schedule-sub">다가오는 일정</h3>
-          <div class="schedule-upcoming" data-upcoming></div>
+          <h3 class="schedule-sub schedule-month-title" data-month-title></h3>
+          <div class="schedule-upcoming schedule-month" data-month-list></div>
+
+          <h3 class="schedule-sub schedule-upcoming-title">다가오는 일정</h3>
+          <div class="schedule-upcoming schedule-upcoming-list" data-upcoming></div>
 
           <button type="button" class="schedule-all-toggle" data-toggle-all aria-expanded="false">전체 일정 보기</button>
           <div class="admin-schedule-list schedule-all" data-admin-schedule-list hidden></div>
@@ -146,6 +149,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase-client.js"></script>
-    <script src="script.js?v=15"></script>
+    <script src="script.js?v=16"></script>
   </body>
 </html>
